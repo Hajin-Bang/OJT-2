@@ -1,7 +1,11 @@
+import { Navigate, Route, Routes } from "react-router-dom";
+import Workspace from "./pages/Workspace";
+
 export default function App() {
   return (
-    <h1 className="text-3xl font-bold underline text-blue-600">
-      Tawilwind Test
-    </h1>
+    <Routes>
+      <Route path="/" element={<Navigate to="/workspace" replace />} />
+      <Route path="/workspace" element={<Workspace />} />
+    </Routes>
   );
 }
