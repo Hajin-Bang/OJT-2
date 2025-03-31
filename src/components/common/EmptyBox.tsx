@@ -1,13 +1,18 @@
 import { HiPlus } from "react-icons/hi";
 interface EmptyBoxProps {
-  text: string;
+  text?: string;
   onAdd?: () => void;
+  height?: string;
 }
 
 /** 데이터 없을 때 나오는 box */
-export default function EmptyBox({ text, onAdd }: EmptyBoxProps) {
+export default function EmptyBox({
+  text = "No data available",
+  onAdd,
+  height = "h-[200px]",
+}: EmptyBoxProps) {
   return (
-    <div className="relative pl-10">
+    <div className={`relative ${onAdd ? "pl-10" : ""}`}>
       {/* + 버튼 */}
       {onAdd && (
         <button
@@ -18,7 +23,9 @@ export default function EmptyBox({ text, onAdd }: EmptyBoxProps) {
         </button>
       )}
       {/* 박스 */}
-      <div className="bg-white border-1 border-dashed border-gray-400 rounded-2xl px-6 py-12 text-center text-gray-500 h-[200px] flex items-center justify-center">
+      <div
+        className={`bg-white border-1 border-dashed border-gray-400 rounded-2xl px-6 py-12 text-center text-gray-500 flex items-center justify-center ${height}`}
+      >
         {text}
       </div>
     </div>

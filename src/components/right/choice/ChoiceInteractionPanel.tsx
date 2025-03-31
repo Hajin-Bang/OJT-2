@@ -96,7 +96,7 @@ export default function ChoiceInteractionPanel() {
           </div>
 
           {/* Empty 상태 */}
-          <EmptyBox text="No options data available" />
+          <EmptyBox />
         </div>
       ))}
     </div>
