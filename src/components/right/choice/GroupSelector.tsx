@@ -12,7 +12,7 @@ export default function GroupSelector({ label, onDelete }: GroupSelectorProps) {
       {onDelete && (
         <button
           onClick={onDelete}
-          className="absolute top-2.4 right-2 text-[25px] font-semibold text-gray-500 hover:text-red-500"
+          className="absolute top-2.4 right-2 text-[25px] font-semibold text-gray-500 hover:text-red-500 cursor-pointer"
         >
           &times;
         </button>
