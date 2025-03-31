@@ -1,3 +1,4 @@
+import CanvasArea from "../components/canvas/CanvasArea";
 import Toolbar from "../components/toolbar/Toolbar";
 
 export default function Workspace() {
@@ -9,11 +10,14 @@ export default function Workspace() {
       {/* 툴바 + 캔버스 */}
       <div className="flex-1 flex flex-col ml-12">
         {/* 툴바 */}
-        <header className="h-[50px] mt-20">
+        <header className="h-[50px] mt-20 mb-2">
           <Toolbar />
         </header>
 
-        <main className="flex-1"></main>
+        {/* 캔버스 */}
+        <main className="flex-1 overflow-auto">
+          <CanvasArea />
+        </main>
       </div>
     </div>
   );
