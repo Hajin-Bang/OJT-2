@@ -9,7 +9,7 @@ export default function ToolButton({ icon, label, onClick }: ToolButtonProps) {
   return (
     <button
       onClick={onClick}
-      className="group relative w-10 h-10 flex items-center justify-center rounded hover:bg-white"
+      className="group relative w-10 h-10 flex items-center justify-center rounded hover:bg-white cursor-pointer"
     >
       <span>{icon}</span>
 
