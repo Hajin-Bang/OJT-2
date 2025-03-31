@@ -6,7 +6,9 @@ export default function InteractionSelect() {
 
   return (
     <div className="flex items-center gap-2 mb-5 cursor-pointer">
-      <label className="font-semibold text-xl pr-4">Interaction</label>
+      <label className="font-extrabold text-2xl pr-4 text-gray-600">
+        Interaction
+      </label>
 
       {/* 드롭다운 영역 */}
       <div className="relative w-[200px] ">
