@@ -1,7 +1,20 @@
+import Toolbar from "../components/toolbar/Toolbar";
+
 export default function Workspace() {
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-50">
-      <h1 className="text-3xl font-bold text-blue-600">저작도구 페이지</h1>
+    <div className="flex h-screen ">
+      {/* 사이드바 */}
+      <aside className="w-[80px] bg-[#e4f6e4] flex flex-col items-center p-2 mt-14 rounded-r-3xl"></aside>
+
+      {/* 툴바 + 캔버스 */}
+      <div className="flex-1 flex flex-col ml-12">
+        {/* 툴바 */}
+        <header className="h-[50px] mt-20">
+          <Toolbar />
+        </header>
+
+        <main className="flex-1"></main>
+      </div>
     </div>
   );
 }
