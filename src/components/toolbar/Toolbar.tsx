@@ -9,6 +9,9 @@ import {
   FiCheckSquare,
 } from "react-icons/fi";
 import ToolButton from "./Toolbutton";
+import { addRect } from "../canvas/handler/addRect";
+import { addCircle } from "../canvas/handler/addCircle";
+import { addText } from "../canvas/handler/addText";
 
 /** 좌측 상단 툴바 */
 export default function Toolbar() {
@@ -27,25 +30,21 @@ export default function Toolbar() {
 
       <div className="w-px h-6 bg-gray-300 mx-2" />
 
-      <ToolButton
-        icon={<FiType size={23} />}
-        label="Text"
-        onClick={() => console.log("Text")}
-      />
+      <ToolButton icon={<FiType size={23} />} label="Text" onClick={addText} />
       <ToolButton
         icon={<FiSquare size={23} />}
         label="Rect"
-        onClick={() => console.log("Rect")}
+        onClick={addRect}
       />
       <ToolButton
         icon={<FiCircle size={23} />}
         label="Circle"
-        onClick={() => console.log("Circle")}
+        onClick={addCircle}
       />
       <ToolButton
         icon={<FiPenTool size={23} />}
         label="Line"
-        onClick={() => console.log("Line")}
+        onClick={() => {}}
       />
       <ToolButton
         icon={<FiBold size={23} />}
