@@ -10,7 +10,7 @@ const ALIGN_OPTIONS = [
 
 type AlignType = (typeof ALIGN_OPTIONS)[number]["value"];
 
-/** 정렬 tool 드롭다운 */
+/** 텍스트 정렬 */
 export default function TextAlignDropdown() {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<AlignType>("left");
@@ -29,20 +29,33 @@ export default function TextAlignDropdown() {
   };
 
   return (
-    <div className="relative">
+    <div className="relative group">
       <button
-        onClick={() => setOpen(!open)}
-        className="w-9 h-9 flex items-center justify-center cursor-pointer"
+        onClick={() => setOpen((prev) => !prev)}
+        className="w-10 h-10 flex items-center justify-center rounded hover:bg-white cursor-pointer"
       >
         {ALIGN_OPTIONS.find((opt) => opt.value === selected)?.icon}
       </button>
 
+      {/* 툴팁 */}
+      {!open && (
+        <span
+          className="absolute top-full mt-2 left-1/2 -translate-x-1/2 
+                     text-md bg-gray-500 text-white rounded px-2 py-1 
+                     opacity-0 group-hover:opacity-100 
+                     pointer-events-none whitespace-nowrap z-10 transition"
+        >
+          Text Align
+        </span>
+      )}
+
+      {/* 드롭다운 */}
       {open && (
-        <div className="absolute top-10 left-0 bg-white shadow rounded-md flex z-50">
+        <div className="absolute z-20 top-[110%] left-1/2 -translate-x-1/2 mt-2 bg-white shadow rounded-md border border-gray-200 flex">
           {ALIGN_OPTIONS.map((opt) => (
             <button
               key={opt.value}
-              className="p-2 hover:bg-gray-100 cursor-pointer"
+              className="p-2 hover:bg-blue-100 cursor-pointer"
               onClick={() => applyAlign(opt.value)}
             >
               {opt.icon}

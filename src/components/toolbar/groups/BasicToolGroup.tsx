@@ -4,7 +4,6 @@ import {
   FiType,
   FiSquare,
   FiCircle,
-  FiPenTool,
   FiBold,
   FiCheckSquare,
 } from "react-icons/fi";
@@ -12,6 +11,7 @@ import ToolButton from "../Toolbutton";
 import { addRect } from "../../canvas/handler/addRect";
 import { addCircle } from "../../canvas/handler/addCircle";
 import { addText } from "../../canvas/handler/addText";
+import { FaSlash } from "react-icons/fa";
 
 /** Object에 상관 없이 기본적으로 뜨는 Toolbar */
 export default function BasicToolGroup() {
@@ -42,7 +42,7 @@ export default function BasicToolGroup() {
         onClick={addCircle}
       />
       <ToolButton
-        icon={<FiPenTool size={23} />}
+        icon={<FaSlash size={23} />}
         label="Line"
         onClick={() => {}}
       />

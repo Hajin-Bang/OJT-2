@@ -1,17 +1,26 @@
-/** 도형을 선택했을 때 보여줄 툴 */
 import ToolButton from "../Toolbutton";
-import { FaPaintBrush, FaFillDrip, FaSlash } from "react-icons/fa";
+import { AiOutlineDash } from "react-icons/ai";
+import StrokeWidthDropdown from "./shape/StrokeWidthDropdown";
 
+/** 요소가 Shape일 때 나타나는 추가 툴 */
 export default function ShapeToolGroup() {
   return (
     <>
+      <StrokeWidthDropdown />
       <ToolButton
-        icon={<FaPaintBrush />}
-        label="Stroke Width"
-        onClick={() => {}}
+        icon={<AiOutlineDash size={25} />}
+        label="Dashed"
+        onClick={() => {
+          const canvas = window.canvas;
+          const active = canvas?.getActiveObject();
+          if (!active) return;
+          active.set(
+            "strokeDashArray",
+            active.strokeDashArray ? undefined : [10, 5]
+          );
+          canvas.renderAll();
+        }}
       />
-      <ToolButton icon={<FaSlash />} label="Stroke Style" onClick={() => {}} />
-      <ToolButton icon={<FaFillDrip />} label="Fill Color" onClick={() => {}} />
     </>
   );
 }

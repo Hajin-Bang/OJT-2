@@ -5,6 +5,7 @@ import { toggleItalic } from "../../canvas/handler/textHandlers";
 import TextAlignDropdown from "./text/TextAlignDropdown";
 import FontSizeControl from "./text/FontSizeControl";
 
+/** 요소가 Text일 경우 나타나는 추가 툴 */
 export default function TextToolGroup() {
   return (
     <>
