@@ -12,20 +12,25 @@ import { addRect } from "../../canvas/handler/addRect";
 import { addCircle } from "../../canvas/handler/addCircle";
 import { addText } from "../../canvas/handler/addText";
 import { FaSlash } from "react-icons/fa";
+import { handleSave } from "../../canvas/handler/saveHandler";
 
 /** Object에 상관 없이 기본적으로 뜨는 Toolbar */
-export default function BasicToolGroup() {
+export default function BasicToolGroup({
+  onPreview,
+}: {
+  onPreview: () => void;
+}) {
   return (
     <>
       <ToolButton
         icon={<FiSave size={23} />}
         label="Save"
-        onClick={() => console.log("Save")}
+        onClick={handleSave}
       />
       <ToolButton
         icon={<FiEye size={23} />}
         label="Preview"
-        onClick={() => console.log("Preview")}
+        onClick={onPreview}
       />
 
       <div className="w-px h-6 bg-gray-300 mx-2" />

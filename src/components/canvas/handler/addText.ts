@@ -1,4 +1,5 @@
 import { Textbox } from "fabric";
+import { v4 as uuidv4 } from "uuid";
 
 /** 텍스트를 추가하는 handler */
 export const addText = () => {
@@ -11,6 +12,8 @@ export const addText = () => {
     fill: "#333333",
     fontWeight: "600",
   });
+
+  text.set({ id: uuidv4() });
 
   const canvas = window.canvas;
   if (canvas) {

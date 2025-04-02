@@ -1,4 +1,3 @@
-// textHandler
 import { Textbox } from "fabric";
 
 /** 기울기 */
@@ -16,7 +15,7 @@ export const toggleItalic = () => {
   }
 };
 
-/** 정렬 변경 (left -> center -> right 순환) */
+/** 정렬  */
 export const changeTextAlign = () => {
   const canvas = window.canvas;
   const active = canvas?.getActiveObject();

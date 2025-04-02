@@ -1,4 +1,5 @@
 import { Circle } from "fabric";
+import { v4 as uuidv4 } from "uuid";
 
 /** 원을 추가하는 handler */
 export const addCircle = () => {
@@ -14,6 +15,8 @@ export const addCircle = () => {
     strokeWidth: 2,
     strokeUniform: true,
   });
+
+  circle.set({ id: uuidv4() });
 
   canvas.add(circle);
   canvas.setActiveObject(circle);

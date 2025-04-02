@@ -1,4 +1,5 @@
 import { Rect } from "fabric";
+import { v4 as uuidv4 } from "uuid";
 
 /** 사각형을 추가하는 handler */
 export const addRect = () => {
@@ -11,6 +12,8 @@ export const addRect = () => {
     stroke: "#000000",
     strokeUniform: true,
   });
+
+  rect.set({ id: uuidv4() });
 
   const canvas = window.canvas;
   if (canvas) {
