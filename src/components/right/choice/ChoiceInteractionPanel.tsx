@@ -5,6 +5,7 @@ import ToggleTab from "../../common/ToggleTab";
 import EmptyBox from "../../common/EmptyBox";
 import SectionTitle from "../../common/SectionTitle";
 import { useChoiceTabStore } from "../../../store/useChoiceTabStore";
+import { useSelectedCanvasObject } from "../../hook/useSelectedCanvasObject";
 
 type UnitType = "unit" | "multi";
 
@@ -16,6 +17,7 @@ interface GroupBlock {
 /** ChoiceInteractionPanel 전체 구성 */
 export default function ChoiceInteractionPanel() {
   const { selectedTab, setSelectedTab } = useChoiceTabStore();
+  const selected = useSelectedCanvasObject();
 
   /** 그룹 상태
    * 최소 1개는 존재
@@ -95,8 +97,11 @@ export default function ChoiceInteractionPanel() {
             />
           </div>
 
-          {/* Empty 상태 */}
-          <EmptyBox />
+          {/* Empty 상태 (요소 클릭 시에는 + 버튼) */}
+          <EmptyBox
+            text="No options data available"
+            onAdd={selected ? () => {} : undefined}
+          />
         </div>
       ))}
     </div>

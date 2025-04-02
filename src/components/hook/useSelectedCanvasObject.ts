@@ -1,0 +1,31 @@
+import { useEffect, useState } from "react";
+import { Object as FabricObjectType } from "fabric";
+
+/** 현재 선택된 요소를 추적하는 훅 */
+export const useSelectedCanvasObject = () => {
+  const [selected, setSelected] = useState<FabricObjectType | null>(null);
+
+  useEffect(() => {
+    const canvas = window.canvas;
+    if (!canvas) return;
+
+    const handleUpdate = () => {
+      const active = canvas.getActiveObject();
+      setSelected(active ?? null);
+    };
+
+    canvas.on("selection:created", handleUpdate);
+    canvas.on("selection:updated", handleUpdate);
+    canvas.on("selection:cleared", () => setSelected(null));
+    canvas.on("mouse:up", handleUpdate);
+
+    return () => {
+      canvas.off("selection:created", handleUpdate);
+      canvas.off("selection:updated", handleUpdate);
+      canvas.off("selection:cleared");
+      canvas.off("mouse:up", handleUpdate);
+    };
+  }, []);
+
+  return selected;
+};
