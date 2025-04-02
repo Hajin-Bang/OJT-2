@@ -6,50 +6,51 @@ export default function CanvasArea() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    if (!canvasRef.current || window.canvas) return;
+    const initCanvas = async () => {
+      if (!canvasRef.current || window.canvas) return;
 
-    /** 객체를 JSON으로 변환할 때 포함할 속성 지정 */
-    FabricObject.prototype.toObject = (function (toObject) {
-      return function (this: Object, propertiesToInclude?: string[]) {
-        return toObject.call(this, [
-          "id",
-          "left",
-          "top",
-          "width",
-          "height",
-          "text",
-          "type",
-          "radius",
-          "fill",
-          "stroke",
-          ...(propertiesToInclude || []),
-        ]);
-      };
-    })(FabricObject.prototype.toObject);
+      /** 객체를 JSON으로 변환할 때 포함할 속성 지정 */
+      FabricObject.prototype.toObject = (function (toObject) {
+        return function (this: Object, propertiesToInclude?: string[]) {
+          return toObject.call(this, [
+            "id",
+            "left",
+            "top",
+            "width",
+            "height",
+            "text",
+            "type",
+            "radius",
+            "fill",
+            "stroke",
+            ...(propertiesToInclude || []),
+          ]);
+        };
+      })(FabricObject.prototype.toObject);
 
-    /** 캔버스 초기화 */
-    const canvas = new Canvas(canvasRef.current, {
-      backgroundColor: "white",
-    });
+      /** 캔버스 초기화 */
+      const canvas = new Canvas(canvasRef.current, {
+        backgroundColor: "white",
+      });
 
-    window.canvas = canvas;
+      window.canvas = canvas;
 
-    /** sessionStorage에 저장된 요소 불러오기 */
-    const saved = sessionStorage.getItem("questionData");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        const json = parsed.elements;
+      /** sessionStorage에 저장된 요소 불러오기 */
+      const saved = sessionStorage.getItem("questionData");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          const json = parsed.elements;
 
-        canvas.loadFromJSON(json, () => {
-          setTimeout(() => {
-            canvas.renderAll();
-          }, 0);
-        });
-      } catch (err) {
-        console.error("실패:", err);
+          await canvas.loadFromJSON(json);
+          canvas.renderAll();
+        } catch (err) {
+          console.error("불러오기 실패:", err);
+        }
       }
-    }
+    };
+
+    initCanvas();
   }, []);
 
   return (
