@@ -4,14 +4,24 @@ import GroupSelector from "./GroupSelector";
 import ToggleTab from "../../common/ToggleTab";
 import EmptyBox from "../../common/EmptyBox";
 import SectionTitle from "../../common/SectionTitle";
+import AddChoiceButton from "../../common/AddChoiceButton";
 import { useChoiceTabStore } from "../../../store/useChoiceTabStore";
 import { useSelectedCanvasObject } from "../../hook/useSelectedCanvasObject";
+import ChoiceList from "./cards/ChoiceList";
+import { v4 as uuidv4 } from "uuid";
+
+interface Choice {
+  id: string;
+  imageUrl: string;
+  isAnswer: boolean;
+}
 
 type UnitType = "unit" | "multi";
 
 interface GroupBlock {
   id: number;
   unitType: UnitType;
+  choices: Choice[];
 }
 
 /** ChoiceInteractionPanel 전체 구성 */
@@ -19,25 +29,33 @@ export default function ChoiceInteractionPanel() {
   const { selectedTab, setSelectedTab } = useChoiceTabStore();
   const selected = useSelectedCanvasObject();
 
-  /** 그룹 상태
-   * 최소 1개는 존재
-   * */
   const [groups, setGroups] = useState<GroupBlock[]>([
-    { id: Date.now(), unitType: "unit" },
+    {
+      id: Date.now(),
+      unitType: "unit",
+      choices: [],
+    },
   ]);
 
-  /** 그룹 추가 함수 */
+  /** 그룹 추가 */
   const handleAddGroup = () => {
-    setGroups((prev) => [...prev, { id: Date.now(), unitType: "unit" }]);
+    setGroups((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        unitType: "unit",
+        choices: [],
+      },
+    ]);
   };
 
-  /** 그룹 삭제 함수 */
+  /** 그룹 삭제 */
   const handleDeleteGroup = (id: number) => {
     if (groups.length === 1) return;
     setGroups((prev) => prev.filter((group) => group.id !== id));
   };
 
-  /** unit/multi 상태 변경 */
+  /** Unit / Multi 전환 */
   const handleUnitTypeChange = (id: number, value: UnitType) => {
     setGroups((prev) =>
       prev.map((group) =>
@@ -46,9 +64,67 @@ export default function ChoiceInteractionPanel() {
     );
   };
 
+  /** 선택된 캔버스 요소를 이미지로 캡처해서 Choice로 추가 */
+  const handleAddChoice = (groupId: number) => {
+    const canvas = window.canvas;
+    if (!canvas || !selected) return;
+
+    const dataUrl = canvas.toDataURL({
+      format: "png",
+      left: selected.left,
+      top: selected.top,
+      width: selected.width,
+      height: selected.height,
+      multiplier: 1,
+    });
+
+    const newChoice: Choice = {
+      id: uuidv4(),
+      imageUrl: dataUrl,
+      isAnswer: false,
+    };
+
+    setGroups((prev) =>
+      prev.map((group) =>
+        group.id === groupId
+          ? { ...group, choices: [...group.choices, newChoice] }
+          : group
+      )
+    );
+  };
+
+  /** Choice 삭제 */
+  const handleDeleteChoice = (groupId: number, choiceId: string) => {
+    setGroups((prev) =>
+      prev.map((group) =>
+        group.id === groupId
+          ? {
+              ...group,
+              choices: group.choices.filter((c) => c.id !== choiceId),
+            }
+          : group
+      )
+    );
+  };
+
+  /** Choice 정답 체크 상태 토글 */
+  const handleToggleAnswer = (groupId: number, choiceId: string) => {
+    setGroups((prev) =>
+      prev.map((group) =>
+        group.id === groupId
+          ? {
+              ...group,
+              choices: group.choices.map((c) =>
+                c.id === choiceId ? { ...c, isAnswer: !c.isAnswer } : c
+              ),
+            }
+          : group
+      )
+    );
+  };
+
   return (
     <div className="space-y-6 pt-2">
-      {/* Choice / GroupChoice 탭 */}
       <ToggleTab
         tabs={[
           { label: "Choice", value: "choice" },
@@ -59,17 +135,14 @@ export default function ChoiceInteractionPanel() {
         size="lg"
       />
 
-      {/* +GROUP 버튼은 GroupChoice일 때 한 번만 표시 */}
       {selectedTab === "group" && (
         <div className="flex justify-start">
           <AddGroupButton onClick={handleAddGroup} />
         </div>
       )}
 
-      {/* 그룹 묶음 렌더링 */}
       {groups.map((group, idx) => (
         <div key={group.id} className="space-y-3">
-          {/* GroupSelector */}
           <div className="flex justify-end">
             <GroupSelector
               label={`GROUP ${idx + 1}`}
@@ -77,7 +150,6 @@ export default function ChoiceInteractionPanel() {
             />
           </div>
 
-          {/* Title + unit/multi 토글 */}
           <div className="flex justify-between items-center">
             {selectedTab === "choice" ? (
               <SectionTitle title="Choice mode" />
@@ -97,11 +169,23 @@ export default function ChoiceInteractionPanel() {
             />
           </div>
 
-          {/* Empty 상태 (요소 클릭 시에는 + 버튼) */}
-          <EmptyBox
-            text="No options data available"
-            onAdd={selected ? () => {} : undefined}
-          />
+          {/* Choice 추가 영역 */}
+          <div className="flex items-center gap-4">
+            {selected && (
+              <AddChoiceButton onClick={() => handleAddChoice(group.id)} />
+            )}
+            {group.choices.length === 0 ? (
+              <EmptyBox />
+            ) : (
+              <ChoiceList
+                choices={group.choices}
+                onDelete={(choiceId) => handleDeleteChoice(group.id, choiceId)}
+                onToggleAnswer={(choiceId) =>
+                  handleToggleAnswer(group.id, choiceId)
+                }
+              />
+            )}
+          </div>
         </div>
       ))}
     </div>
