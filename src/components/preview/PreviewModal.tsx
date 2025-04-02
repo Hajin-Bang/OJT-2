@@ -12,45 +12,55 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const saved = sessionStorage.getItem("questionData");
-    if (!saved || !canvasRef.current) return;
+    /** requestAnimationFrame을 사용하여 DOM 완전 mount 이후 실행 */
+    requestAnimationFrame(() => {
+      const saved = sessionStorage.getItem("questionData");
+      if (!saved || !canvasRef.current) return;
 
-    try {
-      if (previewCanvas) {
-        previewCanvas.dispose();
-        previewCanvas = null;
-      }
+      try {
+        if (previewCanvas) {
+          previewCanvas.dispose();
+          previewCanvas = null;
+        }
 
-      const canvasElement = canvasRef.current;
-      canvasElement.width = 800;
-      canvasElement.height = 550;
+        const canvasElement = canvasRef.current;
+        canvasElement.width = 800;
+        canvasElement.height = 550;
 
-      /** 새 캔버스 생성 */
-      const canvas = new Canvas(canvasElement, {
-        backgroundColor: "white",
-        selection: false,
-      });
-
-      previewCanvas = canvas;
-      const parsed = JSON.parse(saved);
-
-      /** 저장된 JSON 데이터를 로드 */
-      canvas.loadFromJSON(parsed.elements, () => {
-        canvas.getObjects().forEach((obj) => {
-          obj.selectable = false;
-          obj.evented = false;
-          obj.hasControls = false;
-          obj.lockMovementX = true;
-          obj.lockMovementY = true;
+        /**
+         * 새 fabric.Canvas 인스턴스 생성
+         * 선택 불가능하도록 설정
+         *  */
+        const canvas = new Canvas(canvasElement, {
+          backgroundColor: "white",
+          selection: false,
         });
 
-        /** 즉시 렌더링 요청 */
-        canvas.requestRenderAll();
-      });
-    } catch (err) {
-      console.error("오류:", err);
-    }
+        previewCanvas = canvas;
+        const parsed = JSON.parse(saved);
 
+        /** 캔버스에 JSON 데이터 로드 */
+        canvas.loadFromJSON(parsed.elements, () => {
+          /** 다음 프레임에서 렌더링 및 객체 비활성화 적용 */
+          requestAnimationFrame(() => {
+            /** 모든 객체 선택 불가 및 이동/조작 제한 */
+            canvas.getObjects().forEach((obj) => {
+              obj.selectable = false;
+              obj.evented = false;
+              obj.hasControls = false;
+              obj.lockMovementX = true;
+              obj.lockMovementY = true;
+            });
+
+            canvas.renderAll();
+          });
+        });
+      } catch (err) {
+        console.error("오류:", err);
+      }
+    });
+
+    /** 컴포넌트 언마운트 시 캔버스 정리 */
     return () => {
       if (previewCanvas) {
         previewCanvas.dispose();
