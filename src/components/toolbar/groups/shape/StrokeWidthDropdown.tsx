@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { BsBorderWidth } from "react-icons/bs";
+import { getCanvas } from "../../../utils/canvas";
 
 const strokeOptions = [1, 2, 3, 4, 8, 12, 16, 24];
 
@@ -10,7 +11,7 @@ export default function StrokeWidthDropdown() {
   const handleChange = (value: number) => {
     setOpen(false);
 
-    const canvas = window.canvas;
+    const canvas = getCanvas();
     const active = canvas?.getActiveObject();
     if (active) {
       active.set("strokeWidth", value);

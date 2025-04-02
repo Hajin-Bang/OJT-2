@@ -1,8 +1,11 @@
 import { Rect } from "fabric";
 import { v4 as uuidv4 } from "uuid";
+import { getCanvas } from "../../utils/canvas";
 
 /** 사각형을 추가하는 handler */
 export const addRect = () => {
+  const canvas = getCanvas();
+
   const rect = new Rect({
     left: 0,
     top: 0,
@@ -15,10 +18,7 @@ export const addRect = () => {
 
   rect.set({ id: uuidv4() });
 
-  const canvas = window.canvas;
-  if (canvas) {
-    canvas.add(rect);
-    canvas.setActiveObject(rect);
-    canvas.requestRenderAll();
-  }
+  canvas.add(rect);
+  canvas.setActiveObject(rect);
+  canvas.renderAll();
 };

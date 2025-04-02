@@ -1,10 +1,11 @@
+import { getCanvas } from "../../utils/canvas";
+
 /**
  * 요소를 저장하는 handler
  * 캔버스의 요소들을 sessionStorage에 저장
  *  */
 export const handleSave = () => {
-  const canvas = window.canvas;
-  if (!canvas) return;
+  const canvas = getCanvas();
 
   /** 캔버스의 모든 객체와 상태를 JSON으로 변환 */
   const canvasJSON = canvas.toJSON();

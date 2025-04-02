@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Textbox } from "fabric";
 import { FiPlus, FiMinus } from "react-icons/fi";
+import { getCanvas } from "../../../utils/canvas";
 
 /** 텍스트 크기를 control하는 tool button */
 export default function FontSizeControl() {
@@ -18,13 +19,13 @@ export default function FontSizeControl() {
 
   /** 폰트 크기 조절 함수 */
   const updateFontSize = (newSize: number) => {
-    const canvas = window.canvas;
+    const canvas = getCanvas();
     const active = canvas?.getActiveObject();
 
     if (active && active.type === "textbox") {
       const textbox = active as Textbox;
       textbox.set("fontSize", newSize);
-      canvas.requestRenderAll();
+      canvas.renderAll();
       setFontSize(newSize);
     }
   };

@@ -9,6 +9,7 @@ import { useChoiceTabStore } from "../../../store/useChoiceTabStore";
 import { useSelectedCanvasObject } from "../../hook/useSelectedCanvasObject";
 import ChoiceList from "./cards/ChoiceList";
 import { v4 as uuidv4 } from "uuid";
+import { getCanvas } from "../../utils/canvas";
 
 interface Choice {
   id: string;
@@ -66,8 +67,8 @@ export default function ChoiceInteractionPanel() {
 
   /** 선택된 캔버스 요소를 이미지로 캡처해서 Choice로 추가 */
   const handleAddChoice = (groupId: number) => {
-    const canvas = window.canvas;
-    if (!canvas || !selected) return;
+    const canvas = getCanvas();
+    if (!selected) return;
 
     const dataUrl = canvas.toDataURL({
       format: "png",

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Object as FabricObjectType } from "fabric";
+import { getCanvas } from "../utils/canvas";
 
 /** 현재 선택된 요소를 추적하는 훅 */
 export const useSelectedCanvasObject = () => {
   const [selected, setSelected] = useState<FabricObjectType | null>(null);
 
   useEffect(() => {
-    const canvas = window.canvas;
-    if (!canvas) return;
+    const canvas = getCanvas();
 
     const handleUpdate = () => {
       const active = canvas.getActiveObject();

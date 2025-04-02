@@ -1,6 +1,7 @@
 import ToolButton from "../Toolbutton";
 import { AiOutlineDash } from "react-icons/ai";
 import StrokeWidthDropdown from "./shape/StrokeWidthDropdown";
+import { getCanvas } from "../../utils/canvas";
 
 /** 요소가 Shape일 때 나타나는 추가 툴 */
 export default function ShapeToolGroup() {
@@ -11,7 +12,7 @@ export default function ShapeToolGroup() {
         icon={<AiOutlineDash size={25} />}
         label="Dashed"
         onClick={() => {
-          const canvas = window.canvas;
+          const canvas = getCanvas();
           const active = canvas?.getActiveObject();
           if (!active) return;
           active.set(

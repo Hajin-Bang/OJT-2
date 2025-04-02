@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FiAlignLeft, FiAlignCenter, FiAlignRight } from "react-icons/fi";
 import { Textbox } from "fabric";
+import { getCanvas } from "../../../utils/canvas";
 
 const ALIGN_OPTIONS = [
   { icon: <FiAlignLeft size={20} />, value: "left" },
@@ -16,13 +17,13 @@ export default function TextAlignDropdown() {
   const [selected, setSelected] = useState<AlignType>("left");
 
   const applyAlign = (value: AlignType) => {
-    const canvas = window.canvas;
+    const canvas = getCanvas();
     const active = canvas?.getActiveObject();
 
     if (active && active.type === "textbox") {
       const textbox = active as Textbox;
       textbox.set("textAlign", value);
-      canvas.requestRenderAll();
+      canvas.renderAll();
       setSelected(value);
       setOpen(false);
     }

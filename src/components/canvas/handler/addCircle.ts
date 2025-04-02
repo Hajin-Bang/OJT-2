@@ -1,10 +1,10 @@
 import { Circle } from "fabric";
 import { v4 as uuidv4 } from "uuid";
+import { getCanvas } from "../../utils/canvas";
 
 /** 원을 추가하는 handler */
 export const addCircle = () => {
-  const canvas = window.canvas;
-  if (!canvas) return;
+  const canvas = getCanvas();
 
   const circle = new Circle({
     left: 100,
@@ -20,5 +20,5 @@ export const addCircle = () => {
 
   canvas.add(circle);
   canvas.setActiveObject(circle);
-  canvas.requestRenderAll();
+  canvas.renderAll();
 };
