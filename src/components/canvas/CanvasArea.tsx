@@ -27,15 +27,29 @@ export default function CanvasArea() {
       };
     })(FabricObject.prototype.toObject);
 
-    /**
-     * 캔버스 초기화
-     * 전역 window.canvas에 저장해 외부 접근이 가능하게 설정
-     */
+    /** 캔버스 초기화 */
     const canvas = new Canvas(canvasRef.current, {
       backgroundColor: "white",
     });
 
     window.canvas = canvas;
+
+    /** sessionStorage에 저장된 요소 불러오기 */
+    const saved = sessionStorage.getItem("questionData");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        const json = parsed.elements;
+
+        canvas.loadFromJSON(json, () => {
+          setTimeout(() => {
+            canvas.renderAll();
+          }, 0);
+        });
+      } catch (err) {
+        console.error("실패:", err);
+      }
+    }
   }, []);
 
   return (
