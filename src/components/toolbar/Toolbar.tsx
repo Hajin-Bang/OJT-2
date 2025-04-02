@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import BasicToolGroup from "./groups/BasicToolGroup";
 import ShapeToolGroup from "./groups/ShapeToolGroup";
 import TextToolGroup from "./groups/TextToolGroup";
-import MultiToolGroup from "./groups/MultiToolGroup";
 
 type ObjectType = "shape" | "text" | "multiple" | null;
 
@@ -61,7 +60,6 @@ export default function Toolbar({ onPreview }: { onPreview: () => void }) {
           <div className="w-px h-6 bg-gray-300 mx-2" />
           {objectType === "shape" && <ShapeToolGroup />}
           {objectType === "text" && <TextToolGroup />}
-          {objectType === "multiple" && <MultiToolGroup />}
         </>
       )}
     </div>

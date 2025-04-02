@@ -13,6 +13,8 @@ import { addCircle } from "../../canvas/handler/addCircle";
 import { addText } from "../../canvas/handler/addText";
 import { FaSlash } from "react-icons/fa";
 import { handleSave } from "../../canvas/handler/saveHandler";
+import { handleGroup, handleUngroup } from "../../canvas/handler/groupHandlers";
+import { HiMiniArrowsPointingOut, HiMiniSquares2X2 } from "react-icons/hi2";
 
 /** Object에 상관 없이 기본적으로 뜨는 Toolbar */
 export default function BasicToolGroup({
@@ -60,6 +62,17 @@ export default function BasicToolGroup({
         icon={<FiCheckSquare size={23} />}
         label="Choice"
         onClick={() => console.log("Choice")}
+      />
+      <div className="w-px h-6 bg-gray-300 mx-2" />
+      <ToolButton
+        icon={<HiMiniSquares2X2 size={23} />}
+        label="Group"
+        onClick={handleGroup}
+      />
+      <ToolButton
+        icon={<HiMiniArrowsPointingOut size={23} />}
+        label="Ungroup"
+        onClick={handleUngroup}
       />
     </>
   );
