@@ -12,16 +12,25 @@ import ChoiceList from "./cards/ChoiceList";
 import { useChoiceImageUpdater } from "../../hook/useChoiceImageUpdater";
 import { captureSingleObject } from "../../utils/capture";
 import { useCanvasSelectionSync } from "../../hook/useCanvasSelectionSync";
+import { useToastStore } from "../../../store/useToastStore";
 
 export default function ChoiceInteractionPanel() {
   const selected = useSelectedCanvasObject();
   const { mode, setMode } = useChoiceModeStore();
   const [choices, setChoices] = useState<Choice[]>([]);
 
+  const showToast = useToastStore((s) => s.showToast);
+
   /** 선택된 객체만 캡처해서 Choice 추가 */
   const handleAddChoice = () => {
     const canvas = getCanvas();
     if (!selected) return;
+
+    const isDuplicated = choices.some((c) => c.objectId === selected.id);
+    if (isDuplicated) {
+      showToast("이미 선택지에 추가된 요소입니다.", "error");
+      return;
+    }
 
     const dataUrl = captureSingleObject(canvas, selected);
 
