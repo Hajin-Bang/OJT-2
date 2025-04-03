@@ -5,3 +5,9 @@ declare global {
     canvas: Canvas;
   }
 }
+
+declare module "fabric" {
+  interface Object {
+    id?: string;
+  }
+}

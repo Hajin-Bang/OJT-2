@@ -1,38 +1,32 @@
 import { useState } from "react";
-import ToggleTab from "../../common/ToggleTab";
-import EmptyBox from "../../common/EmptyBox";
-import SectionTitle from "../../common/SectionTitle";
-import AddChoiceButton from "../../common/AddChoiceButton";
-import { useSelectedCanvasObject } from "../../hook/useSelectedCanvasObject";
-import ChoiceList from "./cards/ChoiceList";
 import { v4 as uuidv4 } from "uuid";
 import { getCanvas } from "../../utils/canvas";
 import { Choice } from "../../../types/choice";
 import { useChoiceModeStore } from "../../../store/useChoiceModeStore";
+import { useSelectedCanvasObject } from "../../hook/useSelectedCanvasObject";
+import ToggleTab from "../../common/ToggleTab";
+import SectionTitle from "../../common/SectionTitle";
+import AddChoiceButton from "../../common/AddChoiceButton";
+import EmptyBox from "../../common/EmptyBox";
+import ChoiceList from "./cards/ChoiceList";
+import { useChoiceImageUpdater } from "../../hook/useChoiceImageUpdater";
+import { captureSingleObject } from "../../utils/capture";
 
-/** ChoiceInteractionPanel 전체 구성 */
 export default function ChoiceInteractionPanel() {
   const selected = useSelectedCanvasObject();
   const { mode, setMode } = useChoiceModeStore();
-
   const [choices, setChoices] = useState<Choice[]>([]);
 
-  /** 선택된 캔버스 요소를 이미지로 캡처해서 Choice로 추가 */
+  /** 선택된 객체만 캡처해서 Choice 추가 */
   const handleAddChoice = () => {
     const canvas = getCanvas();
     if (!selected) return;
 
-    const dataUrl = canvas.toDataURL({
-      format: "png",
-      left: selected.left,
-      top: selected.top,
-      width: selected.width,
-      height: selected.height,
-      multiplier: 1,
-    });
+    const dataUrl = captureSingleObject(canvas, selected);
 
     const newChoice: Choice = {
       id: uuidv4(),
+      objectId: selected.id!,
       imageUrl: dataUrl,
       isAnswer: false,
     };
@@ -40,17 +34,7 @@ export default function ChoiceInteractionPanel() {
     setChoices((prev) => [...prev, newChoice]);
   };
 
-  /** Choice 삭제 */
-  const handleDeleteChoice = (choiceId: string) => {
-    setChoices((prev) => prev.filter((c) => c.id !== choiceId));
-  };
-
-  /** Choice 정답 체크 상태 토글 */
-  const handleToggleAnswer = (choiceId: string) => {
-    setChoices((prev) =>
-      prev.map((c) => (c.id === choiceId ? { ...c, isAnswer: !c.isAnswer } : c))
-    );
-  };
+  useChoiceImageUpdater(choices, setChoices);
 
   return (
     <div className="space-y-6 pt-2">
@@ -74,8 +58,16 @@ export default function ChoiceInteractionPanel() {
         ) : (
           <ChoiceList
             choices={choices}
-            onDelete={handleDeleteChoice}
-            onToggleAnswer={handleToggleAnswer}
+            onDelete={(id) =>
+              setChoices((prev) => prev.filter((c) => c.id !== id))
+            }
+            onToggleAnswer={(id) =>
+              setChoices((prev) =>
+                prev.map((c) =>
+                  c.id === id ? { ...c, isAnswer: !c.isAnswer } : c
+                )
+              )
+            }
           />
         )}
       </div>

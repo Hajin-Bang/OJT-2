@@ -1,6 +1,7 @@
 export interface Choice {
   id: string;
   imageUrl: string;
+  objectId: string;
   isAnswer: boolean;
 }
 
