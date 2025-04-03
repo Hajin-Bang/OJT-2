@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import BasicToolGroup from "./groups/BasicToolGroup";
 import ShapeToolGroup from "./groups/ShapeToolGroup";
 import TextToolGroup from "./groups/TextToolGroup";
+import { Group } from "fabric";
+import TextGroupToolGroup from "./groups/TextGroupToolGroup";
 
-type ObjectType = "shape" | "text" | "multiple" | null;
+type ObjectType = "shape" | "text" | "textGroup" | null;
 
 /**
  * 캔버스에서 선택된 도형의 타입을 감지하여
@@ -28,11 +30,22 @@ export default function Toolbar({ onPreview }: { onPreview: () => void }) {
           setObjectType("shape");
         } else if (active.type === "textbox") {
           setObjectType("text");
+        } else if (active.type === "group") {
+        /** 그룹 선택 시 내부에 텍스트 포함 여부 확인 */
+          const group = active as Group;
+          const hasTextbox = group
+            .getObjects()
+            .some((obj) => obj.type === "textbox");
+          if (hasTextbox) {
+            setObjectType("textGroup");
+          } else {
+            setObjectType(null);
+          }
         } else {
           setObjectType(null);
         }
       } else {
-        setObjectType("multiple");
+        setObjectType(null);
       }
     };
 
@@ -60,6 +73,7 @@ export default function Toolbar({ onPreview }: { onPreview: () => void }) {
           <div className="w-px h-6 bg-gray-300 mx-2" />
           {objectType === "shape" && <ShapeToolGroup />}
           {objectType === "text" && <TextToolGroup />}
+          {objectType === "textGroup" && <TextGroupToolGroup />}
         </>
       )}
     </div>
