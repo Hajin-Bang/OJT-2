@@ -1,10 +1,5 @@
+import { Choice } from "../../../../types/choice";
 import ChoiceCard from "./ChoiceCard";
-
-export interface Choice {
-  id: string;
-  imageUrl: string;
-  isAnswer: boolean;
-}
 
 interface ChoiceListProps {
   choices: Choice[];

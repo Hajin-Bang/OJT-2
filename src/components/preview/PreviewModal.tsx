@@ -7,13 +7,23 @@ interface PreviewModalProps {
 
 let previewCanvas: Canvas | null = null;
 
+/** 모든 객체를 비활성화 처리 */
+const disableInteractions = (canvas: Canvas) => {
+  canvas.getObjects().forEach((obj) => {
+    obj.selectable = false;
+    obj.evented = false;
+    obj.hasControls = false;
+    obj.lockMovementX = true;
+    obj.lockMovementY = true;
+  });
+};
+
 /** Preview 버튼을 눌렀을 때 나타나는 모달 */
 export default function PreviewModal({ onClose }: PreviewModalProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    /** requestAnimationFrame을 사용하여 DOM 완전 mount 이후 실행 */
-    requestAnimationFrame(() => {
+    const loadPreview = async () => {
       const saved = sessionStorage.getItem("questionData");
       if (!saved || !canvasRef.current) return;
 
@@ -27,10 +37,6 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
         canvasElement.width = 800;
         canvasElement.height = 550;
 
-        /**
-         * 새 fabric.Canvas 인스턴스 생성
-         * 선택 불가능하도록 설정
-         *  */
         const canvas = new Canvas(canvasElement, {
           backgroundColor: "white",
           selection: false,
@@ -39,28 +45,20 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
         previewCanvas = canvas;
         const parsed = JSON.parse(saved);
 
-        /** 캔버스에 JSON 데이터 로드 */
-        canvas.loadFromJSON(parsed.elements, () => {
-          /** 다음 프레임에서 렌더링 및 객체 비활성화 적용 */
-          requestAnimationFrame(() => {
-            /** 모든 객체 선택 불가 및 이동/조작 제한 */
-            canvas.getObjects().forEach((obj) => {
-              obj.selectable = false;
-              obj.evented = false;
-              obj.hasControls = false;
-              obj.lockMovementX = true;
-              obj.lockMovementY = true;
-            });
+        await canvas.loadFromJSON(parsed.elements);
 
-            canvas.renderAll();
-          });
-        });
+        /** 객체 인터랙션 비활성화 + 렌더링 */
+        disableInteractions(canvas);
+        canvas.renderAll();
       } catch (err) {
-        console.error("오류:", err);
+        console.error("Preview 로딩 실패:", err);
       }
+    };
+
+    requestAnimationFrame(() => {
+      loadPreview();
     });
 
-    /** 컴포넌트 언마운트 시 캔버스 정리 */
     return () => {
       if (previewCanvas) {
         previewCanvas.dispose();

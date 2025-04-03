@@ -10,20 +10,7 @@ import { useSelectedCanvasObject } from "../../hook/useSelectedCanvasObject";
 import ChoiceList from "./cards/ChoiceList";
 import { v4 as uuidv4 } from "uuid";
 import { getCanvas } from "../../utils/canvas";
-
-interface Choice {
-  id: string;
-  imageUrl: string;
-  isAnswer: boolean;
-}
-
-type UnitType = "unit" | "multi";
-
-interface GroupBlock {
-  id: number;
-  unitType: UnitType;
-  choices: Choice[];
-}
+import { Choice, GroupBlock, UnitType } from "../../../types/choice";
 
 /** ChoiceInteractionPanel 전체 구성 */
 export default function ChoiceInteractionPanel() {

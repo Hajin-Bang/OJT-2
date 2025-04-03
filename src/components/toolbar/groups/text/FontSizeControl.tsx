@@ -9,8 +9,7 @@ export default function FontSizeControl() {
 
   /** 현재 선택된 텍스트 객체의 폰트 크기 불러오기 */
   useEffect(() => {
-    const canvas = window.canvas;
-    const active = canvas?.getActiveObject();
+    const active = getCanvas().getActiveObject();
     if (active && active.type === "textbox") {
       const textbox = active as Textbox;
       setFontSize(textbox.fontSize ?? 26);
