@@ -8,7 +8,7 @@ interface ChoiceCardProps {
   isAnswer: boolean;
   objectId: string;
   onDelete: () => void;
-  onToggleAnswer: () => void;
+  onSetAnswer: (checked: boolean) => void;
 }
 
 /** 선택지 카드 */
@@ -18,7 +18,7 @@ export default function ChoiceCard({
   isAnswer,
   objectId,
   onDelete,
-  onToggleAnswer,
+  onSetAnswer,
 }: ChoiceCardProps) {
   const { selectedChoiceId, setSelectedChoiceId } = useChoiceSelectionStore();
 
@@ -39,7 +39,7 @@ export default function ChoiceCard({
   return (
     <div
       className={`relative w-[230px] h-[270px] rounded-xl shadow cursor-pointer transition-all ${
-        isSelected ? "bg-green-50 " : "bg-white"
+        isSelected ? "bg-green-50" : "bg-white"
       }`}
       onClick={handleSelect}
     >
@@ -79,7 +79,7 @@ export default function ChoiceCard({
             checked={isAnswer}
             onChange={(e) => {
               e.stopPropagation();
-              onToggleAnswer();
+              onSetAnswer(e.target.checked);
             }}
             className="w-5 h-5"
           />

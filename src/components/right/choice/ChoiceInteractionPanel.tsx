@@ -18,14 +18,14 @@ export default function ChoiceInteractionPanel() {
   const selected = useSelectedCanvasObject();
   const { mode, setMode } = useChoiceModeStore();
   const [choices, setChoices] = useState<Choice[]>([]);
-
   const showToast = useToastStore((s) => s.showToast);
 
-  /** 선택된 객체만 캡처해서 Choice 추가 */
+  /** 선택된 요소를 캡쳐해서 선택지로 추가 */
   const handleAddChoice = () => {
     const canvas = getCanvas();
     if (!selected) return;
 
+    /** 중복 요소 방지 */
     const isDuplicated = choices.some((c) => c.objectId === selected.id);
     if (isDuplicated) {
       showToast("이미 선택지에 추가된 요소입니다.", "error");
@@ -44,7 +44,23 @@ export default function ChoiceInteractionPanel() {
     setChoices((prev) => [...prev, newChoice]);
   };
 
+  /**
+   * 정답 설정 로직
+   * 단일/다중 선택에 따라서 구분
+   */
+  const handleSetAnswer = (id: string, checked: boolean) => {
+    if (mode === "unit") {
+      setChoices((prev) => prev.map((c) => ({ ...c, isAnswer: c.id === id })));
+    } else {
+      setChoices((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, isAnswer: checked } : c))
+      );
+    }
+  };
+
+  /** 선택 요소 수정 시 Choice 이미지 자동 갱신 */
   useChoiceImageUpdater(choices, setChoices);
+  /** 캔버스 선택 요소 - ChoiceCard 요소 동기화 */
   useCanvasSelectionSync();
 
   return (
@@ -72,13 +88,7 @@ export default function ChoiceInteractionPanel() {
             onDelete={(id) =>
               setChoices((prev) => prev.filter((c) => c.id !== id))
             }
-            onToggleAnswer={(id) =>
-              setChoices((prev) =>
-                prev.map((c) =>
-                  c.id === id ? { ...c, isAnswer: !c.isAnswer } : c
-                )
-              )
-            }
+            onSetAnswer={handleSetAnswer}
           />
         )}
       </div>
