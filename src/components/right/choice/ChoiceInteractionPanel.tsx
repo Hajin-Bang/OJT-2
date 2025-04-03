@@ -1,59 +1,24 @@
 import { useState } from "react";
-import AddGroupButton from "./AddGroupButton";
-import GroupSelector from "./GroupSelector";
 import ToggleTab from "../../common/ToggleTab";
 import EmptyBox from "../../common/EmptyBox";
 import SectionTitle from "../../common/SectionTitle";
 import AddChoiceButton from "../../common/AddChoiceButton";
-import { useChoiceTabStore } from "../../../store/useChoiceTabStore";
 import { useSelectedCanvasObject } from "../../hook/useSelectedCanvasObject";
 import ChoiceList from "./cards/ChoiceList";
 import { v4 as uuidv4 } from "uuid";
 import { getCanvas } from "../../utils/canvas";
-import { Choice, GroupBlock, UnitType } from "../../../types/choice";
+import { Choice } from "../../../types/choice";
+import { useChoiceModeStore } from "../../../store/useChoiceModeStore";
 
 /** ChoiceInteractionPanel 전체 구성 */
 export default function ChoiceInteractionPanel() {
-  const { selectedTab, setSelectedTab } = useChoiceTabStore();
   const selected = useSelectedCanvasObject();
+  const { mode, setMode } = useChoiceModeStore();
 
-  const [groups, setGroups] = useState<GroupBlock[]>([
-    {
-      id: Date.now(),
-      unitType: "unit",
-      choices: [],
-    },
-  ]);
-
-  /** 그룹 추가 */
-  const handleAddGroup = () => {
-    setGroups((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        unitType: "unit",
-        choices: [],
-      },
-    ]);
-  };
-
-  /** 그룹 삭제 */
-  const handleDeleteGroup = (id: number) => {
-    if (groups.length === 1) return;
-    setGroups((prev) => prev.filter((group) => group.id !== id));
-  };
-
-  /** Unit / Multi 전환 */
-  const handleUnitTypeChange = (id: number, value: UnitType) => {
-    setGroups((prev) =>
-      prev.map((group) =>
-        group.id === id ? { ...group, unitType: value } : group
-      )
-    );
-  };
+  const [choices, setChoices] = useState<Choice[]>([]);
 
   /** 선택된 캔버스 요소를 이미지로 캡처해서 Choice로 추가 */
-  const handleAddChoice = (groupId: number) => {
+  const handleAddChoice = () => {
     const canvas = getCanvas();
     if (!selected) return;
 
@@ -72,110 +37,48 @@ export default function ChoiceInteractionPanel() {
       isAnswer: false,
     };
 
-    setGroups((prev) =>
-      prev.map((group) =>
-        group.id === groupId
-          ? { ...group, choices: [...group.choices, newChoice] }
-          : group
-      )
-    );
+    setChoices((prev) => [...prev, newChoice]);
   };
 
   /** Choice 삭제 */
-  const handleDeleteChoice = (groupId: number, choiceId: string) => {
-    setGroups((prev) =>
-      prev.map((group) =>
-        group.id === groupId
-          ? {
-              ...group,
-              choices: group.choices.filter((c) => c.id !== choiceId),
-            }
-          : group
-      )
-    );
+  const handleDeleteChoice = (choiceId: string) => {
+    setChoices((prev) => prev.filter((c) => c.id !== choiceId));
   };
 
   /** Choice 정답 체크 상태 토글 */
-  const handleToggleAnswer = (groupId: number, choiceId: string) => {
-    setGroups((prev) =>
-      prev.map((group) =>
-        group.id === groupId
-          ? {
-              ...group,
-              choices: group.choices.map((c) =>
-                c.id === choiceId ? { ...c, isAnswer: !c.isAnswer } : c
-              ),
-            }
-          : group
-      )
+  const handleToggleAnswer = (choiceId: string) => {
+    setChoices((prev) =>
+      prev.map((c) => (c.id === choiceId ? { ...c, isAnswer: !c.isAnswer } : c))
     );
   };
 
   return (
     <div className="space-y-6 pt-2">
-      <ToggleTab
-        tabs={[
-          { label: "Choice", value: "choice" },
-          { label: "GroupChoice", value: "group" },
-        ]}
-        value={selectedTab}
-        onChange={(val) => setSelectedTab(val as "choice" | "group")}
-        size="lg"
-      />
+      <div className="flex justify-between items-center">
+        <SectionTitle title="Choice mode" />
+        <ToggleTab
+          tabs={[
+            { label: "Unit", value: "unit" },
+            { label: "Multi", value: "multi" },
+          ]}
+          value={mode}
+          onChange={(val) => setMode(val as "unit" | "multi")}
+          size="sm"
+        />
+      </div>
 
-      {selectedTab === "group" && (
-        <div className="flex justify-start">
-          <AddGroupButton onClick={handleAddGroup} />
-        </div>
-      )}
-
-      {groups.map((group, idx) => (
-        <div key={group.id} className="space-y-3">
-          <div className="flex justify-end">
-            <GroupSelector
-              label={`GROUP ${idx + 1}`}
-              onDelete={() => handleDeleteGroup(group.id)}
-            />
-          </div>
-
-          <div className="flex justify-between items-center">
-            {selectedTab === "choice" ? (
-              <SectionTitle title="Choice mode" />
-            ) : (
-              <div />
-            )}
-            <ToggleTab
-              tabs={[
-                { label: "Unit", value: "unit" },
-                { label: "Multi", value: "multi" },
-              ]}
-              value={group.unitType}
-              onChange={(val) =>
-                handleUnitTypeChange(group.id, val as UnitType)
-              }
-              size="sm"
-            />
-          </div>
-
-          {/* Choice 추가 영역 */}
-          <div className="flex items-center gap-4">
-            {selected && (
-              <AddChoiceButton onClick={() => handleAddChoice(group.id)} />
-            )}
-            {group.choices.length === 0 ? (
-              <EmptyBox />
-            ) : (
-              <ChoiceList
-                choices={group.choices}
-                onDelete={(choiceId) => handleDeleteChoice(group.id, choiceId)}
-                onToggleAnswer={(choiceId) =>
-                  handleToggleAnswer(group.id, choiceId)
-                }
-              />
-            )}
-          </div>
-        </div>
-      ))}
+      <div className="flex items-center gap-4">
+        {selected && <AddChoiceButton onClick={handleAddChoice} />}
+        {choices.length === 0 ? (
+          <EmptyBox />
+        ) : (
+          <ChoiceList
+            choices={choices}
+            onDelete={handleDeleteChoice}
+            onToggleAnswer={handleToggleAnswer}
+          />
+        )}
+      </div>
     </div>
   );
 }
