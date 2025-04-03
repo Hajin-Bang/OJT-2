@@ -1,39 +1,53 @@
 import { useEffect } from "react";
 import { getCanvas } from "../utils/canvas";
-import { Choice } from "../../types/choice";
 import { captureSingleObject } from "../utils/capture";
+import { Choice } from "../../types/choice";
 
-/** 선택된 객체의 이미지 URL을 캡처하고 Choice 업데이트 */
-export function useChoiceImageUpdater(
+interface UpdatedChoiceImage {
+  id: string;
+  imageUrl: string;
+}
+
+/**
+ * 캔버스 객체 변경 시 Choice 이미지 자동 업데이트
+ * 회전/이동/크기 조절 중에도 실시간 반영
+ */
+export const useChoiceImageUpdater = (
   choices: Choice[],
-  setChoices: React.Dispatch<React.SetStateAction<Choice[]>>
-) {
+  onUpdate: (updated: UpdatedChoiceImage[]) => void
+) => {
   useEffect(() => {
     const canvas = getCanvas();
 
-    const updateChoiceImage = () => {
-      const active = canvas.getActiveObject();
-      if (!active?.id) return;
+    /** 캔버스 객체 변경 시 이미지 업데이트 */
+    const handleModified = () => {
+      const updated: UpdatedChoiceImage[] = [];
 
-      const dataUrl = captureSingleObject(canvas, active);
+      choices.forEach((choice) => {
+        const obj = canvas.getObjects().find((o) => o.id === choice.objectId);
+        if (obj) {
+          const imageUrl = captureSingleObject(canvas, obj);
+          updated.push({ id: choice.id, imageUrl });
+        }
+      });
 
-      setChoices((prev) =>
-        prev.map((c) =>
-          c.objectId === active.id ? { ...c, imageUrl: dataUrl } : c
-        )
-      );
+      if (updated.length > 0) {
+        onUpdate(updated);
+      }
     };
 
-    canvas.on("object:modified", updateChoiceImage);
-    canvas.on("object:scaling", updateChoiceImage);
-    canvas.on("object:moving", updateChoiceImage);
-    canvas.on("object:rotating", updateChoiceImage);
+    const events = [
+      "object:moving",
+      "object:scaling",
+      "object:rotating",
+      "object:modified",
+    ] as const;
+
+    /** 모든 이벤트에 handleModified 연결 */
+    events.forEach((evt) => canvas.on(evt, handleModified));
 
     return () => {
-      canvas.off("object:modified", updateChoiceImage);
-      canvas.off("object:scaling", updateChoiceImage);
-      canvas.off("object:moving", updateChoiceImage);
-      canvas.off("object:rotating", updateChoiceImage);
+      events.forEach((evt) => canvas.off(evt, handleModified));
     };
-  }, [choices, setChoices]);
-}
+  }, [choices, onUpdate]);
+};
