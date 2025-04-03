@@ -11,6 +11,7 @@ import EmptyBox from "../../common/EmptyBox";
 import ChoiceList from "./cards/ChoiceList";
 import { useChoiceImageUpdater } from "../../hook/useChoiceImageUpdater";
 import { captureSingleObject } from "../../utils/capture";
+import { useCanvasSelectionSync } from "../../hook/useCanvasSelectionSync";
 
 export default function ChoiceInteractionPanel() {
   const selected = useSelectedCanvasObject();
@@ -35,6 +36,7 @@ export default function ChoiceInteractionPanel() {
   };
 
   useChoiceImageUpdater(choices, setChoices);
+  useCanvasSelectionSync();
 
   return (
     <div className="space-y-6 pt-2">

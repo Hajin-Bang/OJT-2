@@ -21,6 +21,7 @@ export default function ChoiceList({
           index={idx + 1}
           imageUrl={choice.imageUrl}
           isAnswer={choice.isAnswer}
+          objectId={choice.objectId}
           onDelete={() => onDelete(choice.id)}
           onToggleAnswer={() => onToggleAnswer(choice.id)}
         />

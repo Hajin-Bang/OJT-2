@@ -1,9 +1,12 @@
 import { FiTrash } from "react-icons/fi";
+import { useChoiceSelectionStore } from "../../../../store/useChoiceSelectionStore";
+import { getCanvas } from "../../../utils/canvas";
 
 interface ChoiceCardProps {
   index: number;
   imageUrl: string;
   isAnswer: boolean;
+  objectId: string;
   onDelete: () => void;
   onToggleAnswer: () => void;
 }
@@ -13,11 +16,33 @@ export default function ChoiceCard({
   index,
   imageUrl,
   isAnswer,
+  objectId,
   onDelete,
   onToggleAnswer,
 }: ChoiceCardProps) {
+  const { selectedChoiceId, setSelectedChoiceId } = useChoiceSelectionStore();
+
+  /** 카드 클릭 시 해당 요소를 캔버스에서 선택 상태로 설정 */
+  const handleSelect = () => {
+    const canvas = getCanvas();
+    const target = canvas.getObjects().find((obj) => obj.id === objectId);
+
+    if (target) {
+      canvas.setActiveObject(target);
+      canvas.renderAll();
+      setSelectedChoiceId(objectId);
+    }
+  };
+
+  const isSelected = selectedChoiceId === objectId;
+
   return (
-    <div className="relative w-[230px] h-[270px] bg-white rounded-xl shadow">
+    <div
+      className={`relative w-[230px] h-[270px] rounded-xl shadow cursor-pointer transition-all ${
+        isSelected ? "bg-green-50 " : "bg-white"
+      }`}
+      onClick={handleSelect}
+    >
       {/* 번호 뱃지 */}
       <div className="absolute top-2 left-2 bg-gray-400 text-white text-xs px-2 py-1 rounded-md">
         {index}
@@ -25,14 +50,17 @@ export default function ChoiceCard({
 
       {/* 삭제 버튼 */}
       <button
-        className="absolute top-2.5 right-2 text-gray-600 hover:text-red-500 cursor-pointer"
-        onClick={onDelete}
+        className="absolute top-2.5 right-2 text-gray-600 hover:text-red-500"
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete();
+        }}
       >
         <FiTrash className="w-5 h-5" />
       </button>
 
       {/* 이미지 미리보기 */}
-      <div className=" w-[160px] h-[170px] flex items-center justify-center overflow-hidden mt-10 mx-auto bg-white">
+      <div className="w-[160px] h-[170px] flex items-center justify-center overflow-hidden mt-10 mx-auto bg-white">
         <img
           src={imageUrl}
           alt="preview"
@@ -45,12 +73,15 @@ export default function ChoiceCard({
 
       {/* 정답 체크 */}
       <div className="flex justify-center mt-3 cursor-pointer">
-        <label className="text-lg flex items-center gap-2 text-gray-700 cursor-pointer">
+        <label className="text-lg flex items-center gap-2 text-gray-700">
           <input
             type="checkbox"
             checked={isAnswer}
-            onChange={onToggleAnswer}
-            className="cursor-pointer w-5 h-5"
+            onChange={(e) => {
+              e.stopPropagation();
+              onToggleAnswer();
+            }}
+            className="w-5 h-5"
           />
           ANSWER
         </label>
