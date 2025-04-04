@@ -46,15 +46,15 @@ export default function BoxStyleDropdown() {
 
       {/* 드롭다운 메뉴 */}
       {open && (
-        <div
-          className="absolute z-20 top-[110%] left-1/2 -translate-x-1/2 mt-2 
+        <button
+          className="absolute z-20 top-[90%] left-1/2 -translate-x-1/2 mt-2 
                      bg-white shadow rounded-md border border-gray-200 
-                     flex gap-2 px-3 py-2 w-fit"
+                     flex w-fit"
         >
           {BOX_OPTIONS.map((opt) => (
             <button
               key={opt.label}
-              className="relative group p-2 hover:bg-gray-100 rounded-md cursor-pointer"
+              className="relative group p-3 hover:bg-gray-100 rounded-md cursor-pointer"
               onClick={() => {
                 opt.onClick();
                 setOpen(false);
@@ -72,7 +72,7 @@ export default function BoxStyleDropdown() {
               </span>
             </button>
           ))}
-        </div>
+        </button>
       )}
     </div>
   );

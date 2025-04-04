@@ -3,6 +3,7 @@ import { getCanvas } from "../../../utils/canvas";
 import { Textbox } from "fabric";
 
 const FONT_OPTIONS = [
+  "Times New Roman",
   "sans-serif",
   "serif",
   "monospace",
@@ -43,7 +44,7 @@ export default function FontFamilyDropdown() {
       {/* 현재 폰트명 버튼 */}
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="px-3 w-30 h-10 rounded-md border bg-white shadow border-gray-300 text-gray-800 text-md cursor-pointer"
+        className="px-3 w-45 h-10 rounded-md border bg-white shadow border-gray-300 text-gray-800 text-md cursor-pointer"
         style={{ fontFamily: currentFont }}
       >
         {currentFont}
@@ -51,12 +52,12 @@ export default function FontFamilyDropdown() {
 
       {/* 드롭다운 */}
       {open && (
-        <div className="absolute z-20 top-[110%] left-1/2 -translate-x-1/2 mt-2 bg-white shadow rounded-md border border-gray-200 w-[160px]">
+        <div className="absolute z-20 top-[90%] left-1/2 -translate-x-1/2 mt-2 bg-white shadow rounded-md border border-gray-200 w-[180px]">
           {FONT_OPTIONS.map((font) => (
             <button
               key={font}
               onClick={() => applyFont(font)}
-              className="block w-full px-3 py-2 text-sm hover:bg-green-50 text-center cursor-pointer"
+              className="block w-full px-3 py-2 text-sm hover:bg-gray-100 text-center cursor-pointer"
               style={{ fontFamily: font }}
             >
               {font}

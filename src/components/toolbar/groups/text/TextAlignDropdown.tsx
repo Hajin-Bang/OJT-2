@@ -52,11 +52,11 @@ export default function TextAlignDropdown() {
 
       {/* 드롭다운 */}
       {open && (
-        <div className="absolute z-20 top-[110%] left-1/2 -translate-x-1/2 mt-2 bg-white shadow rounded-md border border-gray-200 flex">
+        <div className="absolute z-20 top-[90%] left-1/2 -translate-x-1/2 mt-2 bg-white shadow rounded-md border border-gray-200 flex">
           {ALIGN_OPTIONS.map((opt) => (
             <button
               key={opt.value}
-              className="p-2 hover:bg-blue-100 cursor-pointer"
+              className="p-2 hover:bg-gray-100 cursor-pointer"
               onClick={() => applyAlign(opt.value)}
             >
               {opt.icon}
