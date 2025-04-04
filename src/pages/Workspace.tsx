@@ -10,7 +10,7 @@ export default function Workspace() {
   return (
     <div className="flex h-screen">
       {/* 왼쪽 사이드바 */}
-      <aside className="w-[80px] bg-[#aaddaa] flex flex-col items-center p-2 mt-14 rounded-r-3xl" />
+      <aside className="w-[10px] bg-[#aaddaa] flex flex-col items-center p-2 mt-14 rounded-r-3xl" />
       {/* 전체 콘텐츠 영역 */}
       <div className="flex flex-1 flex-col">
         {/* 상단 툴바 */}
