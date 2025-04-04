@@ -54,7 +54,7 @@ export default function BoxStyleDropdown() {
           {BOX_OPTIONS.map((opt) => (
             <button
               key={opt.label}
-              className="relative group p-2 hover:bg-gray-100 rounded-md"
+              className="relative group p-2 hover:bg-gray-100 rounded-md cursor-pointer"
               onClick={() => {
                 opt.onClick();
                 setOpen(false);

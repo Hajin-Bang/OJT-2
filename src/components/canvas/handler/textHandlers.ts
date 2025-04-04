@@ -1,6 +1,15 @@
 import { getCanvas } from "../../utils/canvas";
 import { getActiveTextbox } from "../../utils/text";
 
+/** 굵게 */
+export const toggleBold = () => {
+  const textbox = getActiveTextbox();
+  if (!textbox) return;
+
+  textbox.set("fontWeight", textbox.fontWeight === "bold" ? "normal" : "bold");
+  getCanvas().renderAll();
+};
+
 /** 기울기 */
 export const toggleItalic = () => {
   const textbox = getActiveTextbox();
