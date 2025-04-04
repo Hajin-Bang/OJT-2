@@ -4,7 +4,6 @@ import {
   FiType,
   FiSquare,
   FiCircle,
-  FiBold,
   FiTrash2,
 } from "react-icons/fi";
 import ToolButton from "../Toolbutton";
@@ -17,6 +16,7 @@ import { handleGroup, handleUngroup } from "../../canvas/handler/groupHandlers";
 import { HiMiniArrowsPointingOut, HiMiniSquares2X2 } from "react-icons/hi2";
 import { handleDelete } from "../../canvas/handler/deleteHandler";
 import BoxStyleDropdown from "./styleBox/BoxStyleDropdown";
+import TextStyleDropdown from "./text/TextStyleDropdown";
 
 /** Object에 상관 없이 기본적으로 뜨는 Toolbar */
 export default function BasicToolGroup({
@@ -55,12 +55,7 @@ export default function BasicToolGroup({
         label="Line"
         onClick={() => {}}
       />
-      <ToolButton
-        icon={<FiBold size={23} />}
-        label="Main text"
-        onClick={() => console.log("MainText")}
-      />
-
+      <TextStyleDropdown />
       {/* 박스 스타일 드롭다운 */}
       <BoxStyleDropdown />
 
