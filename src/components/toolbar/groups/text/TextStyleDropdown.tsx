@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import ToolButton from "../../Toolbutton";
 import {
   addChoiceText,
@@ -6,6 +6,7 @@ import {
   addViewText,
 } from "../../../canvas/handler/addStyleText";
 import { LuFileText } from "react-icons/lu";
+import { useOutsideClick } from "../../../hook/useOutsideClick";
 
 /** 텍스트 스타일 옵션 */
 const TEXT_OPTIONS = [
@@ -28,9 +29,12 @@ const TEXT_OPTIONS = [
 
 export default function TextStyleDropdown() {
   const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useOutsideClick(wrapperRef, () => setOpen(false));
 
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapperRef}>
       {/* 드롭다운 버튼 */}
       <button
         onClick={() => setOpen((prev) => !prev)}

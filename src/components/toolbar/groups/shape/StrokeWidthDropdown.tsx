@@ -1,12 +1,16 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { BsBorderWidth } from "react-icons/bs";
 import { getCanvas } from "../../../utils/canvas";
+import { useOutsideClick } from "../../../hook/useOutsideClick";
 
 const strokeOptions = [1, 2, 3, 4, 8, 12, 16, 24];
 
 /** 선 굵기를 결정하는 shape tool */
 export default function StrokeWidthDropdown() {
   const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useOutsideClick(wrapperRef, () => setOpen(false));
 
   const handleChange = (value: number) => {
     setOpen(false);
@@ -20,7 +24,7 @@ export default function StrokeWidthDropdown() {
   };
 
   return (
-    <div className="relative group">
+    <div className="relative group" ref={wrapperRef}>
       <button
         onClick={() => setOpen((prev) => !prev)}
         className="w-10 h-10 flex items-center justify-center rounded hover:bg-white cursor-pointer"

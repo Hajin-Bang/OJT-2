@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   addChoiceBox,
   addQuestionBox,
@@ -6,6 +6,7 @@ import {
 } from "../../../../components/canvas/handler/addStyleBox";
 import { FiCheckSquare } from "react-icons/fi";
 import ToolButton from "../../Toolbutton";
+import { useOutsideClick } from "../../../hook/useOutsideClick";
 
 /** 박스 스타일 옵션 */
 const BOX_OPTIONS = [
@@ -29,9 +30,12 @@ const BOX_OPTIONS = [
 
 export default function BoxStyleDropdown() {
   const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useOutsideClick(wrapperRef, () => setOpen(false));
 
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapperRef}>
       <div
         onClick={() => setOpen((prev) => !prev)}
         className="w-10 h-10 flex items-center justify-center rounded hover:bg-white cursor-pointer"

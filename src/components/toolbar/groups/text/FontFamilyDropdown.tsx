@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { getCanvas } from "../../../utils/canvas";
 import { Textbox } from "fabric";
+import { useOutsideClick } from "../../../hook/useOutsideClick";
 
 const FONT_OPTIONS = [
   "Times New Roman",
@@ -14,6 +15,9 @@ const FONT_OPTIONS = [
 export default function FontFamilyDropdown() {
   const [open, setOpen] = useState(false);
   const [currentFont, setCurrentFont] = useState("sans-serif");
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useOutsideClick(wrapperRef, () => setOpen(false));
 
   useEffect(() => {
     /** 현재 font 가져오기 */
@@ -40,7 +44,7 @@ export default function FontFamilyDropdown() {
   };
 
   return (
-    <div className="relative group">
+    <div className="relative group" ref={wrapperRef}>
       {/* 현재 폰트명 버튼 */}
       <button
         onClick={() => setOpen((prev) => !prev)}

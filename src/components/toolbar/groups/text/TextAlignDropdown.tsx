@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { FiAlignLeft, FiAlignCenter, FiAlignRight } from "react-icons/fi";
 import { Textbox } from "fabric";
 import { getCanvas } from "../../../utils/canvas";
+import { useOutsideClick } from "../../../hook/useOutsideClick";
 
 const ALIGN_OPTIONS = [
   { icon: <FiAlignLeft size={20} />, value: "left" },
@@ -15,6 +16,9 @@ type AlignType = (typeof ALIGN_OPTIONS)[number]["value"];
 export default function TextAlignDropdown() {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<AlignType>("left");
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useOutsideClick(wrapperRef, () => setOpen(false));
 
   const applyAlign = (value: AlignType) => {
     const canvas = getCanvas();
@@ -30,7 +34,7 @@ export default function TextAlignDropdown() {
   };
 
   return (
-    <div className="relative group">
+    <div className="relative group" ref={wrapperRef}>
       <button
         onClick={() => setOpen((prev) => !prev)}
         className="w-10 h-10 flex items-center justify-center rounded hover:bg-white cursor-pointer"
