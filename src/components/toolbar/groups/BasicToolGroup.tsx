@@ -10,13 +10,24 @@ import ToolButton from "../Toolbutton";
 import { addRect } from "../../canvas/handler/addRect";
 import { addCircle } from "../../canvas/handler/addCircle";
 import { addText } from "../../canvas/handler/addText";
-import { FaSlash } from "react-icons/fa";
 import { handleSave } from "../../canvas/handler/saveHandler";
 import { handleGroup, handleUngroup } from "../../canvas/handler/groupHandlers";
 import { HiMiniArrowsPointingOut, HiMiniSquares2X2 } from "react-icons/hi2";
 import { handleDelete } from "../../canvas/handler/deleteHandler";
 import BoxStyleDropdown from "./styleBox/BoxStyleDropdown";
 import TextStyleDropdown from "./text/TextStyleDropdown";
+import {
+  LuChevronDown,
+  LuChevronsDown,
+  LuChevronsUp,
+  LuChevronUp,
+} from "react-icons/lu";
+import {
+  bringForwardHandler,
+  bringToFrontHandler,
+  sendBackwardHandler,
+  sendToBackHandler,
+} from "../../canvas/handler/layerHandler";
 
 /** Object에 상관 없이 기본적으로 뜨는 Toolbar */
 export default function BasicToolGroup({
@@ -50,11 +61,6 @@ export default function BasicToolGroup({
         label="Circle"
         onClick={addCircle}
       />
-      <ToolButton
-        icon={<FaSlash size={23} />}
-        label="Line"
-        onClick={() => {}}
-      />
       <TextStyleDropdown />
       {/* 박스 스타일 드롭다운 */}
       <BoxStyleDropdown />
@@ -75,6 +81,27 @@ export default function BasicToolGroup({
         icon={<HiMiniArrowsPointingOut size={23} />}
         label="Ungroup"
         onClick={handleUngroup}
+      />
+      <div className="w-px h-6 bg-gray-300 mx-2" />
+      <ToolButton
+        icon={<LuChevronsUp size={23} />}
+        label="Front"
+        onClick={bringToFrontHandler}
+      />
+      <ToolButton
+        icon={<LuChevronUp size={23} />}
+        label="Forward"
+        onClick={bringForwardHandler}
+      />
+      <ToolButton
+        icon={<LuChevronDown size={23} />}
+        label="Backward"
+        onClick={sendBackwardHandler}
+      />
+      <ToolButton
+        icon={<LuChevronsDown size={23} />}
+        label="Back"
+        onClick={sendToBackHandler}
       />
     </>
   );

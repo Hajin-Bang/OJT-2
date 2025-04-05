@@ -9,7 +9,7 @@ export const addRect = () => {
   const rect = new Rect({
     left: 0,
     top: 0,
-    fill: "transparent",
+    fill: "white",
     width: 100,
     height: 100,
     stroke: "#000000",

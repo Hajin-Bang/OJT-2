@@ -10,7 +10,7 @@ export const addCircle = () => {
     left: 100,
     top: 100,
     radius: 40,
-    fill: "transparent",
+    fill: "white",
     stroke: "#000000",
     strokeWidth: 2,
     strokeUniform: true,

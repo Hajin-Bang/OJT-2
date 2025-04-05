@@ -31,7 +31,7 @@ export default function Toolbar({ onPreview }: { onPreview: () => void }) {
         } else if (active.type === "textbox") {
           setObjectType("text");
         } else if (active.type === "group") {
-        /** 그룹 선택 시 내부에 텍스트 포함 여부 확인 */
+          /** 그룹 선택 시 내부에 텍스트 포함 여부 확인 */
           const group = active as Group;
           const hasTextbox = group
             .getObjects()
@@ -66,7 +66,7 @@ export default function Toolbar({ onPreview }: { onPreview: () => void }) {
   }, []);
 
   return (
-    <div className="flex items-center gap-3 h-full">
+    <div className="flex items-center gap-1 h-full">
       <BasicToolGroup onPreview={onPreview} />
       {objectType && (
         <>
