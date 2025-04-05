@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Canvas, FabricObject, Object } from "fabric";
+import { enableGuideLines } from "../utils/guideline";
 
 /** 요소를 그리고 편집할 수 있는 캔버스 영역 */
 export default function CanvasArea() {
@@ -34,6 +35,8 @@ export default function CanvasArea() {
       });
 
       window.canvas = canvas;
+
+      enableGuideLines({ canvas });
 
       /** sessionStorage에 저장된 요소 불러오기 */
       const saved = sessionStorage.getItem("questionData");
