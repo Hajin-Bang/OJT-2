@@ -32,8 +32,7 @@ export default function BoxStyleDropdown() {
 
   return (
     <div className="relative">
-      {/* 드롭다운 버튼 */}
-      <button
+      <div
         onClick={() => setOpen((prev) => !prev)}
         className="w-10 h-10 flex items-center justify-center rounded hover:bg-white cursor-pointer"
       >
@@ -42,11 +41,11 @@ export default function BoxStyleDropdown() {
           label="Style Box"
           onClick={() => {}}
         />
-      </button>
+      </div>
 
       {/* 드롭다운 메뉴 */}
       {open && (
-        <button
+        <div
           className="absolute z-20 top-[90%] left-1/2 -translate-x-1/2 mt-2 
                      bg-white shadow rounded-md border border-gray-200 
                      flex w-fit"
@@ -72,7 +71,7 @@ export default function BoxStyleDropdown() {
               </span>
             </button>
           ))}
-        </button>
+        </div>
       )}
     </div>
   );

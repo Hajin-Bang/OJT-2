@@ -52,6 +52,7 @@ export default function TextStyleDropdown() {
         >
           {TEXT_OPTIONS.map((opt) => (
             <button
+              key={opt.textStyle}
               className="relative group hover:bg-gray-100 cursor-pointer p-1 pt-2 pb-2"
               onClick={() => {
                 opt.onClick();
