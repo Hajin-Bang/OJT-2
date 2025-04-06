@@ -36,17 +36,11 @@ export default function BoxStyleDropdown() {
 
   return (
     <div className="relative" ref={wrapperRef}>
-      <div
+      <ToolButton
+        icon={<FiCheckSquare size={23} />}
+        label="Style Box"
         onClick={() => setOpen((prev) => !prev)}
-        className="w-10 h-10 flex items-center justify-center rounded hover:bg-white cursor-pointer"
-      >
-        <ToolButton
-          icon={<FiCheckSquare size={23} />}
-          label="Style Box"
-          onClick={() => {}}
-        />
-      </div>
-
+      />
       {/* 드롭다운 메뉴 */}
       {open && (
         <div

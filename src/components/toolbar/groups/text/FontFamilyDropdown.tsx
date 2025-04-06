@@ -46,13 +46,13 @@ export default function FontFamilyDropdown() {
   return (
     <div className="relative group" ref={wrapperRef}>
       {/* 현재 폰트명 버튼 */}
-      <button
+      <div
         onClick={() => setOpen((prev) => !prev)}
-        className="px-3 w-45 h-10 rounded-md border bg-white shadow border-gray-300 text-gray-800 text-md cursor-pointer"
+        className="px-3 w-45 h-10 rounded-md border bg-white shadow border-gray-300 text-gray-800 text-md cursor-pointer flex items-center justify-center"
         style={{ fontFamily: currentFont }}
       >
         {currentFont}
-      </button>
+      </div>
 
       {/* 드롭다운 */}
       {open && (

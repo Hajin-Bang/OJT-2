@@ -36,17 +36,11 @@ export default function TextStyleDropdown() {
   return (
     <div className="relative" ref={wrapperRef}>
       {/* 드롭다운 버튼 */}
-      <button
+      <ToolButton
+        icon={<LuFileText size={23} />}
+        label="Main Text"
         onClick={() => setOpen((prev) => !prev)}
-        className="w-10 h-10 flex flex-col items-center justify-center rounded hover:bg-white cursor-pointer"
-      >
-        <ToolButton
-          icon={<LuFileText size={23} />}
-          label="Main Text"
-          onClick={() => {}}
-        />
-      </button>
-
+      />
       {/* 드롭다운 메뉴 */}
       {open && (
         <div
