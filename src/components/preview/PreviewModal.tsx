@@ -103,8 +103,13 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
             gotCorrect || currentWrong + 1 === maxTries
           );
 
-          /** 정답이거나 마지막 시도라면 버튼 비활성화 */
-          checkButton.setDisabled(true);
+          /** 정답이거나 마지막 시도라면 버튼 비활성화 및 선택지 비활성화 */
+          if (gotCorrect || wrongCountRef.current >= maxTries) {
+            checkButton.setDisabled(true);
+            choiceInteractionRef.current?.disableInteraction();
+          } else {
+            checkButton.setDisabled(true);
+          }
         },
         /** 다음 문제 버튼 동작 */
         () => alert("다음 문제")

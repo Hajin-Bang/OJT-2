@@ -67,6 +67,19 @@ export class ChoiceInteraction {
     });
   }
 
+  /** 선택지 비활성화 */
+  public disableInteraction() {
+    const allIds = this.choices.map((c) => c.objectId);
+
+    this.canvas.getObjects().forEach((obj) => {
+      if (this.hasId(obj) && allIds.includes(obj.id)) {
+        obj.selectable = false;
+        obj.evented = false;
+        obj.hoverCursor = "default";
+      }
+    });
+  }
+
   private clearAllSelections() {
     this.canvas.getObjects().forEach((obj) => {
       if (this.hasId(obj) && this.selectedIds.has(obj.id)) {
