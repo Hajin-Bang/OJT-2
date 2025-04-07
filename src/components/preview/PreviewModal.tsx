@@ -1,10 +1,12 @@
 import { useEffect, useRef } from "react";
 import { Canvas, Textbox } from "fabric";
-import { ActionButton } from "./ActionButton";
-import { ChoiceInteraction } from "./interactions/ChoiceInteraction";
-import { checkAnswers } from "./interactions/checkAnswers";
+import { initializeCanvas } from "./handler/initializeCanvas";
 import { createWrongCountDisplay } from "./WrongCountDisplay";
+import { ChoiceInteraction } from "./interaction/ChoiceInteraction";
+import { ActionButton } from "./ActionButton";
 import { Choice } from "../../types/choice";
+import { checkAnswers } from "./handler/checkAnswers";
+import { createActionButtons } from "./handler/createActionButtons";
 
 interface PreviewModalProps {
   onClose: () => void;
@@ -12,22 +14,10 @@ interface PreviewModalProps {
 
 let previewCanvas: Canvas | null = null;
 
-/** 모든 인터랙션 비활성화 */
-const disableInteractions = (canvas: Canvas) => {
-  canvas.getObjects().forEach((obj) => {
-    obj.selectable = false;
-    obj.evented = false;
-    obj.hasControls = false;
-    obj.lockMovementX = true;
-    obj.lockMovementY = true;
-  });
-};
-
 export default function PreviewModal({ onClose }: PreviewModalProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  const wrongCountRef = useRef(0);
-  const wrongDisplayRef = useRef<Textbox | null>(null);
+  const wrongCountRef = useRef(0); /** 오답 횟수 추적 */
+  const wrongDisplayRef = useRef<Textbox | null>(null); /** 오답 횟수 표시 */
   const maxTries = 3;
 
   const choiceInteractionRef = useRef<ChoiceInteraction | null>(null);
@@ -38,136 +28,96 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
       const saved = sessionStorage.getItem("questionData");
       if (!saved || !canvasRef.current) return;
 
-      try {
-        if (previewCanvas) {
-          previewCanvas.dispose();
-          previewCanvas = null;
-        }
+      if (previewCanvas) {
+        previewCanvas.dispose();
+        previewCanvas = null;
+      }
 
-        const canvasElement = canvasRef.current;
-        canvasElement.width = 800;
-        canvasElement.height = 550;
+      const canvasEl = canvasRef.current;
+      const canvas = initializeCanvas(canvasEl);
+      previewCanvas = canvas;
 
-        /** 새 캔버스 생성 */
-        const canvas = new Canvas(canvasElement, {
-          backgroundColor: "white",
-          selection: false,
-        });
+      const parsed = JSON.parse(saved);
+      await canvas.loadFromJSON(parsed.elements);
 
-        previewCanvas = canvas;
-        const parsed = JSON.parse(saved);
-        await canvas.loadFromJSON(parsed.elements);
-        disableInteractions(canvas);
+      /** 모든 오브젝트 비인터랙티브로 설정 */
+      canvas.getObjects().forEach((obj) => {
+        obj.selectable = false;
+        obj.evented = false;
+        obj.hasControls = false;
+        obj.lockMovementX = true;
+        obj.lockMovementY = true;
+      });
 
-        const wrongDisplay = createWrongCountDisplay(
-          0,
-          maxTries,
-          canvas.getWidth()
+      /** 오답 횟수 표시 UI 추가 */
+      const wrongDisplay = createWrongCountDisplay(
+        0,
+        maxTries,
+        canvas.getWidth()
+      );
+      canvas.add(wrongDisplay);
+      wrongDisplayRef.current = wrongDisplay;
+
+      /** ChoiceInteraction 초기화 */
+      if (parsed.interaction?.interactionType === "choice") {
+        const interaction = new ChoiceInteraction(
+          canvas,
+          parsed.interaction.choices,
+          parsed.interaction.mode,
+          (selectedSet) => {
+            /** 선택지 선택 여부에 따라 채점 버튼 활성화 */
+            checkButtonRef.current?.setDisabled(selectedSet.size === 0);
+          }
         );
-        canvas.add(wrongDisplay);
-        wrongDisplayRef.current = wrongDisplay;
+        choiceInteractionRef.current = interaction;
+      }
 
-        /** 선택지 인터랙션 */
-        if (
-          parsed.interaction?.interactionType === "choice" &&
-          Array.isArray(parsed.interaction.choices)
-        ) {
-          const groupChoices = parsed.interaction.choices;
-          const mode = parsed.interaction.mode;
+      /** 채점 및 다음 버튼 생성 */
+      const [checkButton] = createActionButtons(
+        canvas,
+        /** 채점 로직 */
+        () => {
+          const selected =
+            choiceInteractionRef.current?.getSelectedAnswers() ?? [];
+          const choices: Choice[] = parsed.interaction.choices;
+          const currentWrong = wrongCountRef.current;
 
-          const interaction = new ChoiceInteraction(
-            canvas,
-            groupChoices,
-            mode,
-            (selectedSet) => {
-              /** 선택지 선택 시 채점하기 버튼 활성화 */
-              checkButtonRef.current?.setDisabled(selectedSet.size === 0);
-            }
-          );
-
-          choiceInteractionRef.current = interaction;
-        }
-
-        /** ActionButton 위치 계산 */
-        const canvasWidth = canvas.getWidth();
-        const canvasHeight = canvas.getHeight();
-        const buttonWidth = 150;
-        const buttonHeight = 50;
-        const buttonGap = 20;
-        const marginBottom = 35;
-        const totalWidth = buttonWidth * 2 + buttonGap;
-        const startX = (canvasWidth - totalWidth) / 2;
-        const y = canvasHeight - buttonHeight - marginBottom;
-
-        /** 채점하기 버튼 생성 */
-        const checkButton = new ActionButton(startX, y, "check", () => {
-          const interaction = choiceInteractionRef.current;
-          if (!interaction) return;
-
-          const selected = interaction.getSelectedAnswers();
-          const choices = parsed.interaction.choices;
-          const currentWrongCount = wrongCountRef.current;
-
+          /** 정답 포함 여부 확인 */
           const gotCorrect = selected.some((id) =>
             choices.find((c: Choice) => c.objectId === id && c.isAnswer)
           );
 
+          /** 채점 수행 */
           checkAnswers(
             canvas,
             choices,
             selected,
             () => {
               wrongCountRef.current += 1;
-
-              if (wrongDisplayRef.current) {
-                wrongDisplayRef.current.set(
-                  "text",
-                  `틀린 횟수: ${wrongCountRef.current} / ${maxTries}`
-                );
-                canvas.requestRenderAll();
-              }
+              wrongDisplayRef.current?.set(
+                "text",
+                `틀린 횟수: ${wrongCountRef.current} / ${maxTries}`
+              );
+              canvas.requestRenderAll();
             },
-            gotCorrect || currentWrongCount + 1 === maxTries
+            gotCorrect || currentWrong + 1 === maxTries
           );
 
-          /** 정답 맞췄거나 마지막 시도했으면 버튼 비활성화 */
-          if (gotCorrect || wrongCountRef.current >= maxTries) {
-            checkButton.setDisabled(true);
-          } else {
-            checkButton.setDisabled(true);
-          }
-        });
+          /** 정답이거나 마지막 시도라면 버튼 비활성화 */
+          checkButton.setDisabled(true);
+        },
+        /** 다음 문제 버튼 동작 */
+        () => alert("다음 문제")
+      );
 
-        checkButton.setDisabled(true);
-        checkButtonRef.current = checkButton;
-
-        /** 다음 문제 버튼 */
-        const nextButton = new ActionButton(
-          startX + buttonWidth + buttonGap,
-          y,
-          "next",
-          () => {
-            alert("다음 문제");
-          }
-        );
-
-        canvas.add(checkButton);
-        canvas.add(nextButton);
-        canvas.renderAll();
-      } catch (err) {
-        console.error("Preview 로딩 실패:", err);
-      }
+      checkButtonRef.current = checkButton;
     };
 
-    requestAnimationFrame(() => {
-      loadPreview();
-    });
+    requestAnimationFrame(() => loadPreview());
 
     return () => {
-      if (previewCanvas) {
-        previewCanvas.dispose();
-        previewCanvas = null;
-      }
+      previewCanvas?.dispose();
+      previewCanvas = null;
     };
   }, []);
 
