@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
-import { Canvas } from "fabric";
+import { Canvas, Textbox } from "fabric";
 import { ActionButton } from "./ActionButton";
 import { ChoiceInteraction } from "./interactions/ChoiceInteraction";
 import { checkAnswers } from "./interactions/checkAnswers";
+import { createWrongCountDisplay } from "./WrongCountDisplay";
+import { Choice } from "../../types/choice";
 
 interface PreviewModalProps {
   onClose: () => void;
@@ -23,6 +25,11 @@ const disableInteractions = (canvas: Canvas) => {
 
 export default function PreviewModal({ onClose }: PreviewModalProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const wrongCountRef = useRef(0);
+  const wrongDisplayRef = useRef<Textbox | null>(null);
+  const maxTries = 3;
+
   const choiceInteractionRef = useRef<ChoiceInteraction | null>(null);
   const checkButtonRef = useRef<ActionButton | null>(null);
 
@@ -51,6 +58,14 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
         const parsed = JSON.parse(saved);
         await canvas.loadFromJSON(parsed.elements);
         disableInteractions(canvas);
+
+        const wrongDisplay = createWrongCountDisplay(
+          0,
+          maxTries,
+          canvas.getWidth()
+        );
+        canvas.add(wrongDisplay);
+        wrongDisplayRef.current = wrongDisplay;
 
         /** 선택지 인터랙션 */
         if (
@@ -91,8 +106,36 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
 
           const selected = interaction.getSelectedAnswers();
           const choices = parsed.interaction.choices;
+          const currentWrongCount = wrongCountRef.current;
 
-          checkAnswers(canvas, choices, selected);
+          const gotCorrect = selected.some((id) =>
+            choices.find((c: Choice) => c.objectId === id && c.isAnswer)
+          );
+
+          checkAnswers(
+            canvas,
+            choices,
+            selected,
+            () => {
+              wrongCountRef.current += 1;
+
+              if (wrongDisplayRef.current) {
+                wrongDisplayRef.current.set(
+                  "text",
+                  `틀린 횟수: ${wrongCountRef.current} / ${maxTries}`
+                );
+                canvas.requestRenderAll();
+              }
+            },
+            gotCorrect || currentWrongCount + 1 === maxTries
+          );
+
+          /** 정답 맞췄거나 마지막 시도했으면 버튼 비활성화 */
+          if (gotCorrect || wrongCountRef.current >= maxTries) {
+            checkButton.setDisabled(true);
+          } else {
+            checkButton.setDisabled(true);
+          }
         });
 
         checkButton.setDisabled(true);

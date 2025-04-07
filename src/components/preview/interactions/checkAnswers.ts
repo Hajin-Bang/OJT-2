@@ -5,8 +5,12 @@ import { Choice } from "../../../types/choice";
 export const checkAnswers = (
   canvas: Canvas,
   choices: Choice[],
-  selectedIds: string[]
+  selectedIds: string[],
+  onWrong: () => void,
+  showCorrect: boolean
 ) => {
+  let wasWrong = false;
+
   choices.forEach((choice) => {
     const obj = canvas
       .getObjects()
@@ -23,13 +27,18 @@ export const checkAnswers = (
     const isSelected = selectedIds.includes(choice.objectId);
 
     if (isCorrect && isSelected) {
-      rect.set("stroke", "#33E651");
+      rect.set({ stroke: "#33E651", strokeWidth: 3 });
     } else if (!isCorrect && isSelected) {
-      rect.set("stroke", "#FF4D4F");
-    } else if (isCorrect && !isSelected) {
+      rect.set({ stroke: "#FF4D4F", strokeWidth: 3 });
+      wasWrong = true;
+    } else if (isCorrect && !isSelected && showCorrect) {
       rect.set({ stroke: "#33E651", strokeWidth: 3 });
     }
   });
+
+  if (wasWrong) {
+    onWrong();
+  }
 
   canvas.requestRenderAll();
 };
