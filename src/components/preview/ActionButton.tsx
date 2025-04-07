@@ -2,6 +2,7 @@ import { Group, Rect, Textbox } from "fabric";
 
 type ButtonType = "check" | "next";
 
+/** Preview에서 표시되는 Action Button (채점하기/다음 문제) */
 export class ActionButton extends Group {
   button: Rect;
   buttonText: Textbox;
@@ -50,12 +51,22 @@ export class ActionButton extends Group {
     });
   }
 
-  /** 버튼 타입에 따른 스타일 반환 */
+  /** 버튼 타입에 따라 텍스트 및 색상 반환 */
   private static getButtonStyles(type: ButtonType) {
     const styles = {
       check: { text: "채점하기", fill: "#33E651" },
       next: { text: "다음 문제", fill: "#224DEC" },
     };
     return styles[type];
+  }
+
+  /** 버튼 활성화/비활성화 및 색상 변경 */
+  public setDisabled(disabled: boolean) {
+    this.disabled = disabled;
+    const fillColor = disabled
+      ? "#DAD6D6"
+      : ActionButton.getButtonStyles(this.buttonType).fill;
+    this.button.set("fill", fillColor);
+    this.canvas?.requestRenderAll();
   }
 }

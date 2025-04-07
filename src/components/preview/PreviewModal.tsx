@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import { Canvas } from "fabric";
 import { ActionButton } from "./ActionButton";
+import { ChoiceInteraction } from "./interactions/ChoiceInteraction";
+import { checkAnswers } from "./interactions/checkAnswers";
 
 interface PreviewModalProps {
   onClose: () => void;
@@ -8,7 +10,7 @@ interface PreviewModalProps {
 
 let previewCanvas: Canvas | null = null;
 
-/** 모든 객체를 비활성화 처리 */
+/** 모든 인터랙션 비활성화 */
 const disableInteractions = (canvas: Canvas) => {
   canvas.getObjects().forEach((obj) => {
     obj.selectable = false;
@@ -19,9 +21,10 @@ const disableInteractions = (canvas: Canvas) => {
   });
 };
 
-/** Preview 버튼을 눌렀을 때 나타나는 모달 */
 export default function PreviewModal({ onClose }: PreviewModalProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const choiceInteractionRef = useRef<ChoiceInteraction | null>(null);
+  const checkButtonRef = useRef<ActionButton | null>(null);
 
   useEffect(() => {
     const loadPreview = async () => {
@@ -38,6 +41,7 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
         canvasElement.width = 800;
         canvasElement.height = 550;
 
+        /** 새 캔버스 생성 */
         const canvas = new Canvas(canvasElement, {
           backgroundColor: "white",
           selection: false,
@@ -45,29 +49,56 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
 
         previewCanvas = canvas;
         const parsed = JSON.parse(saved);
-
         await canvas.loadFromJSON(parsed.elements);
-
-        /** 객체 인터랙션 비활성화 + 렌더링 */
         disableInteractions(canvas);
 
-        /** ActionButton 렌더링을 위한 위치 계산 */
+        /** 선택지 인터랙션 */
+        if (
+          parsed.interaction?.interactionType === "choice" &&
+          Array.isArray(parsed.interaction.choices)
+        ) {
+          const groupChoices = parsed.interaction.choices;
+          const mode = parsed.interaction.mode;
+
+          const interaction = new ChoiceInteraction(
+            canvas,
+            groupChoices,
+            mode,
+            (selectedSet) => {
+              /** 선택지 선택 시 채점하기 버튼 활성화 */
+              checkButtonRef.current?.setDisabled(selectedSet.size === 0);
+            }
+          );
+
+          choiceInteractionRef.current = interaction;
+        }
+
+        /** ActionButton 위치 계산 */
         const canvasWidth = canvas.getWidth();
         const canvasHeight = canvas.getHeight();
-
         const buttonWidth = 150;
         const buttonHeight = 50;
         const buttonGap = 20;
         const marginBottom = 35;
-
         const totalWidth = buttonWidth * 2 + buttonGap;
         const startX = (canvasWidth - totalWidth) / 2;
         const y = canvasHeight - buttonHeight - marginBottom;
 
-        /** ActionButton 생성 */
+        /** 채점하기 버튼 생성 */
         const checkButton = new ActionButton(startX, y, "check", () => {
-          alert("채점");
+          const interaction = choiceInteractionRef.current;
+          if (!interaction) return;
+
+          const selected = interaction.getSelectedAnswers();
+          const choices = parsed.interaction.choices;
+
+          checkAnswers(canvas, choices, selected);
         });
+
+        checkButton.setDisabled(true);
+        checkButtonRef.current = checkButton;
+
+        /** 다음 문제 버튼 */
         const nextButton = new ActionButton(
           startX + buttonWidth + buttonGap,
           y,
@@ -79,8 +110,6 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
 
         canvas.add(checkButton);
         canvas.add(nextButton);
-        canvas.renderAll();
-
         canvas.renderAll();
       } catch (err) {
         console.error("Preview 로딩 실패:", err);
