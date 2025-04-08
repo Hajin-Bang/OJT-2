@@ -7,6 +7,7 @@ import { ActionButton } from "./ActionButton";
 import { Choice } from "../../types/choice";
 import { checkAnswers } from "./handler/checkAnswers";
 import { createActionButtons } from "./handler/createActionButtons";
+import ModalWrapper from "../common/ModalWrapper";
 
 interface PreviewModalProps {
   onClose: () => void;
@@ -73,10 +74,8 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
       }
 
       /** 채점 및 다음 버튼 생성 */
-      /** 채점 및 다음 버튼 생성 */
       const [checkButton] = createActionButtons(
         canvas,
-        /** 채점 로직 */
         () => {
           const selected =
             choiceInteractionRef.current?.getSelectedAnswers() ?? [];
@@ -113,10 +112,9 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
             checkButton.setDisabled(true);
             choiceInteractionRef.current?.disableInteraction();
           } else {
-            checkButton.setDisabled(true); // 다시 채점 전에 비활성화
+            checkButton.setDisabled(true);
           }
         },
-        /** 다음 문제 버튼 동작 */
         () => alert("다음 문제")
       );
 
@@ -132,19 +130,10 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[10000] bg-black/50 flex items-center justify-center">
-      <div className="relative bg-white w-[850px] max-w-full rounded-xl shadow-lg p-6 pb-20">
-        <h2 className="text-xl font-bold text-green-700 mb-4">Preview</h2>
-        <div className="border border-gray-300 mx-auto">
-          <canvas ref={canvasRef} width={800} height={550} />
-        </div>
-        <button
-          onClick={onClose}
-          className="absolute bottom-6 right-6 px-4 py-2 border border-gray-100 hover:bg-gray-200 rounded cursor-pointer"
-        >
-          Cancel
-        </button>
+    <ModalWrapper title="Preview" onClose={onClose}>
+      <div className="border border-gray-300 mx-auto">
+        <canvas ref={canvasRef} width={800} height={550} />
       </div>
-    </div>
+    </ModalWrapper>
   );
 }

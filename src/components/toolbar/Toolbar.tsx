@@ -11,7 +11,13 @@ type ObjectType = "shape" | "text" | "textGroup" | null;
  * 캔버스에서 선택된 도형의 타입을 감지하여
  * 그에 맞는 툴 그룹을 표시
  */
-export default function Toolbar({ onPreview }: { onPreview: () => void }) {
+export default function Toolbar({
+  onPreview,
+  onImage,
+}: {
+  onPreview: () => void;
+  onImage: () => void;
+}) {
   const [objectType, setObjectType] = useState<ObjectType>(null);
 
   useEffect(() => {
@@ -67,7 +73,7 @@ export default function Toolbar({ onPreview }: { onPreview: () => void }) {
 
   return (
     <div className="flex items-center gap-1 h-full">
-      <BasicToolGroup onPreview={onPreview} />
+      <BasicToolGroup onPreview={onPreview} onImage={onImage} />
       {objectType && (
         <>
           <div className="w-px h-6 bg-gray-300 mx-2" />

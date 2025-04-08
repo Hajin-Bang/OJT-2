@@ -21,6 +21,7 @@ import {
   LuChevronsDown,
   LuChevronsUp,
   LuChevronUp,
+  LuImagePlus,
 } from "react-icons/lu";
 import {
   bringForwardHandler,
@@ -32,8 +33,10 @@ import {
 /** Object에 상관 없이 기본적으로 뜨는 Toolbar */
 export default function BasicToolGroup({
   onPreview,
+  onImage,
 }: {
   onPreview: () => void;
+  onImage: () => void;
 }) {
   return (
     <>
@@ -49,7 +52,11 @@ export default function BasicToolGroup({
       />
 
       <div className="w-px h-6 bg-gray-300 mx-2" />
-
+      <ToolButton
+        icon={<LuImagePlus size={23} />}
+        label="Image"
+        onClick={onImage}
+      />
       <ToolButton icon={<FiType size={23} />} label="Text" onClick={addText} />
       <ToolButton
         icon={<FiSquare size={23} />}

@@ -3,9 +3,11 @@ import CanvasArea from "../components/canvas/CanvasArea";
 import RightPanel from "../components/right/RightPanel";
 import Toolbar from "../components/toolbar/Toolbar";
 import PreviewModal from "../components/preview/PreviewModal";
+import ImageModal from "../components/image/ImageModal";
 
 export default function Workspace() {
   const [showPreview, setShowPreview] = useState(false);
+  const [showImage, setShowImage] = useState(false);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -15,7 +17,10 @@ export default function Workspace() {
       <div className="flex flex-1 flex-col">
         {/* 상단 툴바 */}
         <header className="h-[50px] mt-20 mb-2 ml-14">
-          <Toolbar onPreview={() => setShowPreview(true)} />
+          <Toolbar
+            onPreview={() => setShowPreview(true)}
+            onImage={() => setShowImage(true)}
+          />
         </header>
 
         {/* 캔버스 + 오른쪽 패널 */}
@@ -32,6 +37,7 @@ export default function Workspace() {
         </div>
       </div>
       {showPreview && <PreviewModal onClose={() => setShowPreview(false)} />}
+      {showImage && <ImageModal onClose={() => setShowImage(false)} />}
     </div>
   );
 }
