@@ -50,7 +50,7 @@ export default function ChoiceCard({
 
       {/* 삭제 버튼 */}
       <button
-        className="absolute top-2.5 right-2 text-gray-600 hover:text-red-500"
+        className="absolute top-2.5 right-2 text-gray-600 hover:text-red-500 cursor-pointer"
         onClick={(e) => {
           e.stopPropagation();
           onDelete();
@@ -81,7 +81,7 @@ export default function ChoiceCard({
               e.stopPropagation();
               onSetAnswer(e.target.checked);
             }}
-            className="w-5 h-5"
+            className="w-5 h-5 cursor-pointer"
           />
           ANSWER
         </label>
