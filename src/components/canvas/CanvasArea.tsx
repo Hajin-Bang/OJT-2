@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { Canvas, FabricObject, Object } from "fabric";
 import { enableGuideLines } from "../utils/guideline";
 import { handleCopy, handlePaste } from "./handler/copyPasteHandler";
+import { useChoiceStore } from "../../store/useChoiceStore";
 
 /** 요소를 그리고 편집할 수 있는 캔버스 영역 */
 export default function CanvasArea() {
@@ -36,6 +37,14 @@ export default function CanvasArea() {
       });
 
       window.canvas = canvas;
+
+      /** 요소 삭제 감지 */
+      canvas.on("object:removed", (e) => {
+        const removed = e.target;
+        if (removed && "id" in removed && typeof removed.id === "string") {
+          useChoiceStore.getState().removeChoice(removed.id); // 여기 유지
+        }
+      });
 
       enableGuideLines({ canvas });
 
