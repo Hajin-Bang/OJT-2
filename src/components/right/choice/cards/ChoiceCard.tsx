@@ -38,8 +38,8 @@ export default function ChoiceCard({
 
   return (
     <div
-      className={`relative w-[230px] h-[270px] rounded-xl shadow cursor-pointer transition-all ${
-        isSelected ? "bg-green-50" : "bg-white"
+      className={`relative w-[230px] h-[270px] rounded-xl shadow cursor-pointer transition-all border-3 bg-white ${
+        isSelected ? "border-green-500" : "border-transparent"
       }`}
       onClick={handleSelect}
     >
