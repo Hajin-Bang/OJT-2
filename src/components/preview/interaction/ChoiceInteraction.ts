@@ -1,6 +1,7 @@
 import { Canvas, Group, Rect, Object as FabricObject } from "fabric";
 import { Choice, UnitType } from "../../../types/choice";
 import { selectChoiceBox, deselectChoiceBox } from "../../utils/choice";
+import { isFeedbackIcon } from "../FeedbackIcon";
 
 /** 선택지 상호작용 처리 */
 export class ChoiceInteraction {
@@ -9,6 +10,7 @@ export class ChoiceInteraction {
   private mode: UnitType;
   private selectedIds: Set<string> = new Set();
   private onSelectChange?: (selected: Set<string>) => void;
+  private isLocked = false;
 
   constructor(
     canvas: Canvas,
@@ -32,8 +34,6 @@ export class ChoiceInteraction {
         obj.selectable = true;
         obj.evented = true;
         obj.hoverCursor = "pointer";
-
-        /** 선택 외곽선 안 보이게 설정 */
         obj.hasBorders = false;
         obj.hasControls = false;
       } else {
@@ -42,7 +42,15 @@ export class ChoiceInteraction {
       }
     });
 
+    /** 기존 피드백 아이콘 제거 */
     this.canvas.on("mouse:down", (e) => {
+      if (this.isLocked) return; /** 잠금상태(횟수초과, 정답)일 경우 제외 */
+      this.canvas.getObjects().forEach((obj) => {
+        if (isFeedbackIcon(obj)) {
+          this.canvas.remove(obj);
+        }
+      });
+
       const target = e.target;
       if (!target || !this.hasId(target)) return;
       const targetId = target.id;
@@ -70,7 +78,6 @@ export class ChoiceInteraction {
   /** 선택지 비활성화 */
   public disableInteraction() {
     const allIds = this.choices.map((c) => c.objectId);
-
     this.canvas.getObjects().forEach((obj) => {
       if (this.hasId(obj) && allIds.includes(obj.id)) {
         obj.selectable = false;
@@ -78,8 +85,10 @@ export class ChoiceInteraction {
         obj.hoverCursor = "default";
       }
     });
+    this.isLocked = true;
   }
 
+  /** 선택 초기화 */
   private clearAllSelections() {
     this.canvas.getObjects().forEach((obj) => {
       if (this.hasId(obj) && this.selectedIds.has(obj.id)) {

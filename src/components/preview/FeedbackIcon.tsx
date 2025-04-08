@@ -1,19 +1,29 @@
-import { Circle, Textbox } from "fabric";
+import { Circle, Textbox, Object as FabricObject } from "fabric";
 
 /** 정답/오답 아이콘 */
-export function createFeedbackIcon(isCorrect: boolean, x: number, y: number) {
+export function createFeedbackIcon(
+  isCorrect: boolean,
+  x: number,
+  y: number
+): FabricObject {
+  const common = {
+    selectable: false,
+    data: { type: "feedback" } as const,
+  };
+
   if (isCorrect) {
     return new Circle({
+      ...common,
       left: x - 28,
       top: y - 28,
       radius: 25,
       stroke: "#33E651",
       strokeWidth: 5,
       fill: "transparent",
-      selectable: false,
     });
   } else {
     return new Textbox("✕", {
+      ...common,
       left: x,
       top: y,
       fontSize: 50,
@@ -21,7 +31,19 @@ export function createFeedbackIcon(isCorrect: boolean, x: number, y: number) {
       fontWeight: "bold",
       originX: "center",
       originY: "center",
-      selectable: false,
     });
   }
+}
+
+/** 피드백 아이콘 판별 함수 */
+export function isFeedbackIcon(
+  obj: FabricObject
+): obj is FabricObject & { data: { type: "feedback" } } {
+  return (
+    "data" in obj &&
+    !!obj.data &&
+    typeof obj.data === "object" &&
+    "type" in obj.data &&
+    obj.data.type === "feedback"
+  );
 }
