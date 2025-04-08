@@ -11,6 +11,7 @@ export class ChoiceInteraction {
   private selectedIds: Set<string> = new Set();
   private onSelectChange?: (selected: Set<string>) => void;
   private isLocked = false;
+  private resetAfterWrong = false;
 
   constructor(
     canvas: Canvas,
@@ -25,7 +26,7 @@ export class ChoiceInteraction {
     this.initSelection();
   }
 
-  /** 선택지에 마우스 이벤트 등록 */
+  /** 선택지 클릭 이벤트 등록 */
   private initSelection() {
     const allIds = this.choices.map((c) => c.objectId);
 
@@ -42,22 +43,32 @@ export class ChoiceInteraction {
       }
     });
 
-    /** 기존 피드백 아이콘 제거 */
+    /** 선택 이벤트 처리 */
     this.canvas.on("mouse:down", (e) => {
-      if (this.isLocked) return; /** 잠금상태(횟수초과, 정답)일 경우 제외 */
-      this.canvas.getObjects().forEach((obj) => {
-        if (isFeedbackIcon(obj)) {
-          this.canvas.remove(obj);
-        }
-      });
+      if (this.isLocked) return;
+
+      /** multi 모드일 때 이전 오답 - 상태 초기화 */
+      if (this.resetAfterWrong && this.mode === "multi") {
+        this.clearAllSelections();
+        this.canvas.getObjects().forEach((obj) => {
+          if (isFeedbackIcon(obj)) this.canvas.remove(obj);
+        });
+        this.resetAfterWrong = false;
+      }
 
       const target = e.target;
       if (!target || !this.hasId(target)) return;
       const targetId = target.id;
 
+      /** unit 모드일 땐 항상 선택 초기화 + 아이콘 제거 */
       if (this.mode === "unit") {
         this.clearAllSelections();
+        this.canvas.getObjects().forEach((obj) => {
+          if (isFeedbackIcon(obj)) this.canvas.remove(obj);
+        });
       }
+
+      /** 선택/해제 토글 */
 
       const wasSelected = this.selectedIds.has(targetId);
       const rect = this.findRectInGroup(target as Group);
@@ -75,7 +86,7 @@ export class ChoiceInteraction {
     });
   }
 
-  /** 선택지 비활성화 */
+  /** 모든 선택지 클릭 불가능하게 설정 */
   public disableInteraction() {
     const allIds = this.choices.map((c) => c.objectId);
     this.canvas.getObjects().forEach((obj) => {
@@ -88,7 +99,12 @@ export class ChoiceInteraction {
     this.isLocked = true;
   }
 
-  /** 선택 초기화 */
+  /** 다음 클릭 시 상태 초기화되도록 설정 */
+  public setResetAfterWrong() {
+    this.resetAfterWrong = true;
+  }
+
+  /** 선택 초기화 + 선택 효과 제거 */
   private clearAllSelections() {
     this.canvas.getObjects().forEach((obj) => {
       if (this.hasId(obj) && this.selectedIds.has(obj.id)) {
@@ -100,12 +116,12 @@ export class ChoiceInteraction {
     this.selectedIds.clear();
   }
 
-  /** 그룹 내부에서 rect 객체 찾기 */
+  /** Group 내부 rect 요소 추출 */
   private findRectInGroup(group: Group): Rect | undefined {
     return group.getObjects().find((obj): obj is Rect => obj.type === "rect");
   }
 
-  /** id 필드를 가진 객체인지 검사 */
+  /** id 필드를 가진 오브젝트인지 확인 */
   private hasId(obj: FabricObject): obj is FabricObject & { id: string } {
     return "id" in obj && typeof obj.id === "string";
   }

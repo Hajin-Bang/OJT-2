@@ -73,6 +73,7 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
       }
 
       /** 채점 및 다음 버튼 생성 */
+      /** 채점 및 다음 버튼 생성 */
       const [checkButton] = createActionButtons(
         canvas,
         /** 채점 로직 */
@@ -82,12 +83,15 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
           const choices: Choice[] = parsed.interaction.choices;
           const currentWrong = wrongCountRef.current;
 
-          /** 정답 포함 여부 확인 */
-          const gotCorrect = selected.some((id) =>
-            choices.find((c: Choice) => c.objectId === id && c.isAnswer)
-          );
+          const correctIds = choices
+            .filter((c) => c.isAnswer)
+            .map((c) => c.objectId);
+          const selectedSet = new Set(selected);
 
-          /** 채점 수행 */
+          const isAllCorrect =
+            selected.length === correctIds.length &&
+            correctIds.every((id) => selectedSet.has(id));
+
           checkAnswers(
             canvas,
             choices,
@@ -99,16 +103,17 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
                 `틀린 횟수: ${wrongCountRef.current} / ${maxTries}`
               );
               canvas.requestRenderAll();
+
+              choiceInteractionRef.current?.setResetAfterWrong();
             },
-            gotCorrect || currentWrong + 1 === maxTries
+            isAllCorrect || currentWrong + 1 === maxTries
           );
 
-          /** 정답이거나 마지막 시도라면 버튼 비활성화 및 선택지 비활성화 */
-          if (gotCorrect || wrongCountRef.current >= maxTries) {
+          if (isAllCorrect || wrongCountRef.current >= maxTries) {
             checkButton.setDisabled(true);
             choiceInteractionRef.current?.disableInteraction();
           } else {
-            checkButton.setDisabled(true);
+            checkButton.setDisabled(true); // 다시 채점 전에 비활성화
           }
         },
         /** 다음 문제 버튼 동작 */

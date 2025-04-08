@@ -1,6 +1,6 @@
 import { Circle, Textbox, Object as FabricObject } from "fabric";
 
-/** 정답/오답 아이콘 */
+/** 정답 또는 오답 아이콘 생성 함수 */
 export function createFeedbackIcon(
   isCorrect: boolean,
   x: number,
@@ -22,7 +22,7 @@ export function createFeedbackIcon(
       fill: "transparent",
     });
   } else {
-    return new Textbox("✕", {
+    return new Textbox("\u2715", {
       ...common,
       left: x,
       top: y,
