@@ -78,17 +78,21 @@ export default function ChoiceInteractionPanel() {
         />
       </div>
 
-      <div className="flex items-center gap-4">
-        {selected && <AddChoiceButton onClick={handleAddChoice} />}
-        {choices.length === 0 ? (
-          <EmptyBox />
-        ) : (
-          <ChoiceList
-            choices={choices}
-            onDelete={(id) => removeChoice(id)}
-            onSetAnswer={handleSetAnswer}
-          />
-        )}
+      <div className="w-full">
+        <div className="flex gap-4 items-center">
+          {selected && <AddChoiceButton onClick={handleAddChoice} />}
+          {choices.length === 0 ? (
+            <EmptyBox />
+          ) : (
+            <div className="overflow-x-auto">
+              <ChoiceList
+                choices={choices}
+                onDelete={(id) => removeChoice(id)}
+                onSetAnswer={handleSetAnswer}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

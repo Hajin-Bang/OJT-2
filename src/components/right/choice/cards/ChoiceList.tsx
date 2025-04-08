@@ -14,8 +14,8 @@ export default function ChoiceList({
   onSetAnswer,
 }: ChoiceListProps) {
   return (
-    <div className="overflow-x-auto w-full">
-      <div className="flex gap-4 w-fit">
+    <div className="overflow-x-auto  max-w-[calc(100vw-950px)] pb-4">
+      <div className="flex gap-4 w-max">
         {choices.map((choice, idx) => (
           <ChoiceCard
             key={choice.id}

@@ -8,7 +8,7 @@ export default function Workspace() {
   const [showPreview, setShowPreview] = useState(false);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen overflow-hidden">
       {/* 왼쪽 사이드바 */}
       <aside className="w-[50px] bg-[#aaddaa] flex flex-col items-center p-2 mt-14 rounded-tr-3xl" />
       {/* 전체 콘텐츠 영역 */}
@@ -19,17 +19,14 @@ export default function Workspace() {
         </header>
 
         {/* 캔버스 + 오른쪽 패널 */}
-        <div
-          className="flex-1 flex ml-12 overflow-hidden"
-          style={{ flexDirection: "row" }}
-        >
+        <div className="flex-1 flex ml-12 overflow-hidden">
           {/* 캔버스 영역 */}
           <div className="flex-none">
             <CanvasArea />
           </div>
 
-          {/* 오른쪽 패널 영역 */}
-          <div className="flex-1 overflow-auto">
+          {/* 오른쪽 패널 */}
+          <div className="flex-1">
             <RightPanel />
           </div>
         </div>
