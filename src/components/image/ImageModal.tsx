@@ -3,12 +3,7 @@ import { useEffect, useState } from "react";
 import ModalWrapper from "../common/ModalWrapper";
 import { getImageList } from "../../api/image";
 import { TGetImage } from "../../types/image";
-import {
-  FiChevronLeft,
-  FiChevronRight,
-  FiChevronsLeft,
-  FiChevronsRight,
-} from "react-icons/fi";
+import PaginationButton from "./PaginationButton";
 import { Canvas } from "fabric";
 import { addImage } from "../canvas/handler/addImage";
 
@@ -23,6 +18,7 @@ export default function ImageModal({ onClose, canvas }: ImageModalProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const pageSize = 12;
 
+  /** 이미지 리스트 가져오기 */
   useEffect(() => {
     const fetchImages = async () => {
       try {
@@ -40,6 +36,7 @@ export default function ImageModal({ onClose, canvas }: ImageModalProps) {
     ? `https://sol2-api.esls.io/images/T1/${selectedImage.imageId}.${selectedImage.extension}`
     : null;
 
+  /** 현재 페이지에서 보여줄 이미지 12개 */
   const currentImages = images.slice((page - 1) * pageSize, page * pageSize);
 
   return (
@@ -53,7 +50,8 @@ export default function ImageModal({ onClose, canvas }: ImageModalProps) {
             addImage(canvas, imageUrl);
             onClose();
           }}
-          className="px-4 py-2 border border-gray-100 hover:bg-gray-200 rounded cursor-pointer text-green-700"
+          disabled={!selectedId}
+          className="px-4 py-2 border border-gray-100 hover:bg-gray-200 rounded cursor-pointer text-green-700 disabled:text-gray-400 disabled:cursor-default"
         >
           Add
         </button>
@@ -87,41 +85,33 @@ export default function ImageModal({ onClose, canvas }: ImageModalProps) {
 
       {/* 페이지네이션 */}
       <div className="absolute bottom-7 left-0 w-full flex justify-center items-center gap-2">
-        <button
+        <PaginationButton
+          direction="first"
           onClick={() => setPage(1)}
           disabled={page === 1}
-          className="p-2 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-30"
-        >
-          <FiChevronsLeft size={18} />
-        </button>
-        <button
+        />
+        <PaginationButton
+          direction="left"
           onClick={() => setPage((p) => Math.max(p - 1, 1))}
           disabled={page === 1}
-          className="p-2 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-30"
-        >
-          <FiChevronLeft size={18} />
-        </button>
+        />
         <span className="text-sm text-gray-600 px-2">
           Page {page} of {Math.ceil(images.length / pageSize) || 1}
         </span>
-        <button
+        <PaginationButton
+          direction="right"
           onClick={() =>
             setPage((p) =>
               p < Math.ceil(images.length / pageSize) ? p + 1 : p
             )
           }
           disabled={page >= Math.ceil(images.length / pageSize)}
-          className="p-2 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-30"
-        >
-          <FiChevronRight size={18} />
-        </button>
-        <button
+        />
+        <PaginationButton
+          direction="last"
           onClick={() => setPage(Math.ceil(images.length / pageSize))}
           disabled={page >= Math.ceil(images.length / pageSize)}
-          className="p-2 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-30"
-        >
-          <FiChevronsRight size={18} />
-        </button>
+        />
       </div>
       <div className="h-5" />
     </ModalWrapper>
