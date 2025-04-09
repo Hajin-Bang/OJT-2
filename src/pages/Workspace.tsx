@@ -37,7 +37,12 @@ export default function Workspace() {
         </div>
       </div>
       {showPreview && <PreviewModal onClose={() => setShowPreview(false)} />}
-      {showImage && <ImageModal onClose={() => setShowImage(false)} />}
+      {showImage && (
+        <ImageModal
+          onClose={() => setShowImage(false)}
+          canvas={window.canvas}
+        />
+      )}
     </div>
   );
 }
