@@ -15,10 +15,9 @@ export default function InteractionSelect() {
         <select
           className="w-full h-[45px] border border-gray-300 rounded-md px-3 pr-10 text-md bg-white appearance-none"
           value={type}
-          onChange={(e) => setType(e.target.value as "choice" | "match")}
+          onChange={(e) => setType(e.target.value as "choice")}
         >
           <option value="choice">choice</option>
-          <option value="match">match</option>
         </select>
 
         <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">

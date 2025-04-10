@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type InteractionType = "choice" | "match";
+type InteractionType = "choice";
 
 /** Interaction 상태 */
 interface InteractionState {
