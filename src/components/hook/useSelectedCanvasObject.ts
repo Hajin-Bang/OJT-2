@@ -11,7 +11,9 @@ export const useSelectedCanvasObject = () => {
 
     const handleUpdate = () => {
       const active = canvas.getActiveObject();
-      setSelected(active ?? null);
+      const activeObjs = canvas.getActiveObjects();
+      if (!active || activeObjs.length > 1) setSelected(null);
+      else setSelected(active);
     };
 
     canvas.on("selection:created", handleUpdate);
