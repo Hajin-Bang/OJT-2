@@ -74,49 +74,45 @@ export default function PreviewModal({ onClose }: PreviewModalProps) {
       }
 
       /** 채점 및 다음 버튼 생성 */
-      const [checkButton] = createActionButtons(
-        canvas,
-        () => {
-          const selected =
-            choiceInteractionRef.current?.getSelectedAnswers() ?? [];
-          const choices: Choice[] = parsed.interaction.choices;
-          const currentWrong = wrongCountRef.current;
+      const checkButton = createActionButtons(canvas, () => {
+        const selected =
+          choiceInteractionRef.current?.getSelectedAnswers() ?? [];
+        const choices: Choice[] = parsed.interaction.choices;
+        const currentWrong = wrongCountRef.current;
 
-          const correctIds = choices
-            .filter((c) => c.isAnswer)
-            .map((c) => c.objectId);
-          const selectedSet = new Set(selected);
+        const correctIds = choices
+          .filter((c) => c.isAnswer)
+          .map((c) => c.objectId);
+        const selectedSet = new Set(selected);
 
-          const isAllCorrect =
-            selected.length === correctIds.length &&
-            correctIds.every((id) => selectedSet.has(id));
+        const isAllCorrect =
+          selected.length === correctIds.length &&
+          correctIds.every((id) => selectedSet.has(id));
 
-          checkAnswers(
-            canvas,
-            choices,
-            selected,
-            () => {
-              wrongCountRef.current += 1;
-              wrongDisplayRef.current?.set(
-                "text",
-                `틀린 횟수: ${wrongCountRef.current} / ${maxTries}`
-              );
-              canvas.requestRenderAll();
+        checkAnswers(
+          canvas,
+          choices,
+          selected,
+          () => {
+            wrongCountRef.current += 1;
+            wrongDisplayRef.current?.set(
+              "text",
+              `틀린 횟수: ${wrongCountRef.current} / ${maxTries}`
+            );
+            canvas.requestRenderAll();
 
-              choiceInteractionRef.current?.setResetAfterWrong();
-            },
-            isAllCorrect || currentWrong + 1 === maxTries
-          );
+            choiceInteractionRef.current?.setResetAfterWrong();
+          },
+          isAllCorrect || currentWrong + 1 === maxTries
+        );
 
-          if (isAllCorrect || wrongCountRef.current >= maxTries) {
-            checkButton.setDisabled(true);
-            choiceInteractionRef.current?.disableInteraction();
-          } else {
-            checkButton.setDisabled(true);
-          }
-        },
-        () => alert("다음 문제")
-      );
+        if (isAllCorrect || wrongCountRef.current >= maxTries) {
+          checkButton.setDisabled(true);
+          choiceInteractionRef.current?.disableInteraction();
+        } else {
+          checkButton.setDisabled(true);
+        }
+      });
 
       checkButtonRef.current = checkButton;
     };

@@ -1,6 +1,6 @@
 import { Group, Rect, Textbox } from "fabric";
 
-type ButtonType = "check" | "next";
+type ButtonType = "check";
 
 /** Preview에서 표시되는 Action Button (채점하기/다음 문제) */
 export class ActionButton extends Group {
@@ -55,7 +55,6 @@ export class ActionButton extends Group {
   private static getButtonStyles(type: ButtonType) {
     const styles = {
       check: { text: "채점하기", fill: "#33E651" },
-      next: { text: "다음 문제", fill: "#224DEC" },
     };
     return styles[type];
   }
