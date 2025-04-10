@@ -63,6 +63,21 @@ export default function ChoiceInteractionPanel() {
 
   useCanvasSelectionSync();
 
+  /** unit/multi 전환시 answer 선택 초기화 */
+  const handleModeChange = (val: string) => {
+    const mode = val as "unit" | "multi";
+    setMode(mode);
+
+    if (mode === "unit") {
+      const { choices, setChoices } = useChoiceStore.getState();
+      const updated = choices.map((c) => ({
+        ...c,
+        isAnswer: false,
+      }));
+      setChoices(updated);
+    }
+  };
+
   return (
     <div className="space-y-6 pt-2">
       <div className="flex justify-between items-center">
@@ -73,7 +88,7 @@ export default function ChoiceInteractionPanel() {
             { label: "Multi", value: "multi" },
           ]}
           value={mode}
-          onChange={(val) => setMode(val as "unit" | "multi")}
+          onChange={handleModeChange}
           size="sm"
         />
       </div>
