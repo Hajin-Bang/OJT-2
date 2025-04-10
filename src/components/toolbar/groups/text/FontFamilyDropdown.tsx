@@ -37,6 +37,7 @@ export default function FontFamilyDropdown() {
     if (active && active.type === "textbox") {
       const textbox = active as Textbox;
       textbox.set("fontFamily", font);
+      canvas.fire("object:modified", { target: textbox });
       canvas.renderAll();
       setCurrentFont(font);
       setOpen(false);

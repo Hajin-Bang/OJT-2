@@ -20,6 +20,7 @@ export default function ShapeToolGroup() {
             active.strokeDashArray ? undefined : [10, 5]
           );
           canvas.renderAll();
+          canvas.fire("object:modified", { target: active });
         }}
       />
     </>

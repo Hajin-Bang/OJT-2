@@ -20,6 +20,7 @@ export default function StrokeWidthDropdown() {
     if (active) {
       active.set("strokeWidth", value);
       canvas.renderAll();
+      canvas.fire("object:modified", { target: active });
     }
   };
 

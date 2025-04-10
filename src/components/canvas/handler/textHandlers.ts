@@ -7,7 +7,9 @@ export const toggleBold = () => {
   if (!textbox) return;
 
   textbox.set("fontWeight", textbox.fontWeight === "bold" ? "normal" : "bold");
+  textbox.fire("modified");
   getCanvas().renderAll();
+  getCanvas().fire("object:modified", { target: textbox });
 };
 
 /** 기울기 */
@@ -19,7 +21,9 @@ export const toggleItalic = () => {
     "fontStyle",
     textbox.fontStyle === "italic" ? "normal" : "italic"
   );
+  textbox.fire("modified");
   getCanvas().renderAll();
+  getCanvas().fire("object:modified", { target: textbox });
 };
 
 /** 정렬 */

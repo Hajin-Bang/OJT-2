@@ -27,6 +27,7 @@ export default function TextAlignDropdown() {
     if (active && active.type === "textbox") {
       const textbox = active as Textbox;
       textbox.set("textAlign", value);
+      canvas.fire("object:modified", { target: textbox });
       canvas.renderAll();
       setSelected(value);
       setOpen(false);

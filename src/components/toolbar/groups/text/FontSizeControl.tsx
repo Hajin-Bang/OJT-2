@@ -24,6 +24,7 @@ export default function FontSizeControl() {
     if (active && active.type === "textbox") {
       const textbox = active as Textbox;
       textbox.set("fontSize", newSize);
+      canvas.fire("object:modified", { target: textbox });
       canvas.renderAll();
       setFontSize(newSize);
     }
