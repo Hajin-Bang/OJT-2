@@ -37,7 +37,6 @@ export const useChoiceImageUpdater = (
     };
 
     const events = [
-      "object:moving",
       "object:scaling",
       "object:rotating",
       "object:modified",
