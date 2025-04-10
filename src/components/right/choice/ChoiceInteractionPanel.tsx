@@ -20,7 +20,8 @@ export default function ChoiceInteractionPanel() {
   const selected = useSelectedCanvasObject();
   const { mode, setMode } = useChoiceModeStore();
   const showToast = useToastStore((s) => s.showToast);
-  const { choices, addChoice, updateChoice, removeChoice } = useChoiceStore();
+  const { choices, addChoice, updateChoice, removeChoiceById } =
+    useChoiceStore();
 
   /** 선택된 요소를 캡쳐해서 선택지로 추가 */
   const handleAddChoice = () => {
@@ -102,7 +103,7 @@ export default function ChoiceInteractionPanel() {
             <div className="overflow-x-auto">
               <ChoiceList
                 choices={choices}
-                onDelete={(id) => removeChoice(id)}
+                onDelete={(id) => removeChoiceById(id)}
                 onSetAnswer={handleSetAnswer}
               />
             </div>

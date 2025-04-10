@@ -7,7 +7,8 @@ interface ChoiceStore {
   setChoices: (choices: Choice[]) => void;
   addChoice: (choice: Choice) => void;
   updateChoice: (id: string, updated: Partial<Choice>) => void;
-  removeChoice: (objectId: string) => void;
+  removeChoiceById: (id: string) => void;
+  removeChoiceByObjectId: (objectId: string) => void;
   resetChoices: () => void;
 }
 
@@ -32,7 +33,13 @@ export const useChoiceStore = create<ChoiceStore>((set) => ({
       version: Date.now(),
     })),
 
-  removeChoice: (objectId) =>
+  removeChoiceById: (id) =>
+    set((state) => ({
+      choices: state.choices.filter((c) => c.id !== id),
+      version: Date.now(),
+    })),
+
+  removeChoiceByObjectId: (objectId) =>
     set((state) => ({
       choices: state.choices.filter((c) => c.objectId !== objectId),
       version: Date.now(),

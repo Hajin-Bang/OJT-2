@@ -42,7 +42,7 @@ export default function CanvasArea() {
       canvas.on("object:removed", (e) => {
         const removed = e.target;
         if (removed && "id" in removed && typeof removed.id === "string") {
-          useChoiceStore.getState().removeChoice(removed.id); // 여기 유지
+          useChoiceStore.getState().removeChoiceByObjectId(removed.id);
         }
       });
 
